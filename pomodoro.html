@@ -1,1865 +1,1541 @@
 <!DOCTYPE html>
-<html lang="fr" class="dark">
+<html lang="fr" data-mode="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PomodoroRPG</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            cyber: { bg: '#0a0a1a', card: '#12122a', border: '#2a2a5a', accent: '#00f5ff', accent2: '#ff00aa', accent3: '#39ff14' }
-          },
-          fontFamily: { mono: ['"JetBrains Mono"', '"Fira Code"', 'monospace'] }
-        }
-      }
-    }
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0a0a1a;
-      --card-bg: #12122a;
-      --card-border: #2a2a5a;
-      --gallery-bg: rgba(18,18,42,0.8);
-      --gallery-border: rgba(42,42,90,0.5);
-      --text: #fff;
-      --text-muted: rgba(255,255,255,0.4);
-      --text-muted2: rgba(255,255,255,0.35);
-      --text-muted3: rgba(255,255,255,0.25);
-      --item-bg: rgba(255,255,255,0.03);
-      --item-border: rgba(255,255,255,0.08);
-      --item-border-hover: rgba(0,245,255,0.2);
-      --item-bg-hover: rgba(0,245,255,0.08);
-      --item-bg-active: rgba(0,245,255,0.1);
-      --item-border-active: rgba(0,245,255,0.4);
-      --item-icon-border: rgba(255,255,255,0.15);
-      --xp-track-bg: rgba(255,255,255,0.05);
-      --xp-track-border: rgba(0,245,255,0.15);
-      --input-bg: rgba(0,245,255,0.1);
-      --input-border: rgba(0,245,255,0.4);
-      --input-text: #fff;
-      --toast-bg: linear-gradient(135deg, rgba(0,245,255,0.12), rgba(255,0,170,0.12));
-      --toast-border: rgba(0,245,255,0.25);
-      --toast-text: #fff;
-      --scrollbar-thumb: rgba(0,245,255,0.2);
-      --rules-bg: rgba(18,18,42,0.6);
-      --rules-border: rgba(42,42,90,0.4);
-      --rules-text: rgba(255,255,255,0.5);
-      --rules-section-title: rgba(255,255,255,0.3);
-      --rules-item-border: rgba(255,255,255,0.05);
-      --dev-bg: rgba(18,18,42,0.9);
-      --dev-border: rgba(42,42,90,0.5);
-      --glow-cyan: 0 0 20px rgba(0,245,255,0.15), 0 0 60px rgba(0,245,255,0.05);
-      --glow-pink: 0 0 20px rgba(255,0,170,0.15), 0 0 60px rgba(255,0,170,0.05);
-    }
-    .light {
-      --bg: #e8e8f0;
-      --card-bg: #ffffff;
-      --card-border: #d0d0e0;
-      --gallery-bg: rgba(255,255,255,0.85);
-      --gallery-border: rgba(200,200,220,0.8);
-      --text: #1a1a2e;
-      --text-muted: rgba(0,0,0,0.5);
-      --text-muted2: rgba(0,0,0,0.4);
-      --text-muted3: rgba(0,0,0,0.25);
-      --item-bg: rgba(0,0,0,0.02);
-      --item-border: rgba(0,0,0,0.08);
-      --item-border-hover: rgba(0,245,255,0.4);
-      --item-bg-hover: rgba(0,245,255,0.06);
-      --item-bg-active: rgba(0,245,255,0.1);
-      --item-border-active: rgba(0,245,255,0.5);
-      --item-icon-border: rgba(0,0,0,0.12);
-      --xp-track-bg: rgba(0,0,0,0.06);
-      --xp-track-border: rgba(0,245,255,0.25);
-      --input-bg: rgba(0,245,255,0.08);
-      --input-border: rgba(0,245,255,0.5);
-      --input-text: #1a1a2e;
-      --toast-bg: linear-gradient(135deg, rgba(0,245,255,0.9), rgba(255,0,170,0.9));
-      --toast-border: rgba(255,255,255,0.3);
-      --toast-text: #fff;
-      --scrollbar-thumb: rgba(0,245,255,0.4);
-      --rules-bg: rgba(255,255,255,0.7);
-      --rules-border: rgba(200,200,220,0.7);
-      --rules-text: rgba(0,0,0,0.5);
-      --rules-section-title: rgba(0,0,0,0.3);
-      --rules-item-border: rgba(0,0,0,0.06);
-      --dev-bg: rgba(255,255,255,0.95);
-      --dev-border: rgba(200,200,220,0.8);
-      --glow-cyan: 0 0 20px rgba(0,245,255,0.08), 0 0 60px rgba(0,245,255,0.02);
-      --glow-pink: 0 0 20px rgba(255,0,170,0.08), 0 0 60px rgba(255,0,170,0.02);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); font-family: 'JetBrains Mono', monospace; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .main-card { background: var(--card-bg); border: 1px solid var(--card-border); }
-    .main-card .text-gray-500 { color: var(--text-muted); }
-    .main-card .text-gray-600 { color: var(--text-muted2); }
-    .rules-container .text-gray-500 { color: var(--text-muted); }
-    .rules-container .text-gray-600 { color: var(--text-muted2); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>PomodoroRPG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   PomodoroRPG · Dusk Glass — feuille de style complète
+   Dark (défaut) + Light · responsive PC / mobile
+   ============================================================ */
 
-    .glow-cyan { box-shadow: var(--glow-cyan); }
-    .glow-pink { box-shadow: var(--glow-pink); }
-    .text-glow-cyan { text-shadow: 0 0 20px rgba(0,245,255,0.5); }
-    .text-glow-pink { text-shadow: 0 0 20px rgba(255,0,170,0.5); }
-    .text-glow-green { text-shadow: 0 0 20px rgba(57,255,20,0.5); }
+:root {
+  --text:#f6ebe0; --muted:#c8b3a2; --muted-2:#9a8473;
+  --amber:#ffc06b; --amber-deep:#f59331; --coral:#ff8a63; --gold:#ffd89a; --sage:#bcc78c;
+  --glass:rgba(54,38,32,0.45); --glass-2:rgba(72,50,40,0.42); --glass-3:rgba(90,62,48,0.5);
+  --glass-brd:rgba(255,210,170,0.16); --glass-brd-2:rgba(255,210,170,0.28); --glass-hi:rgba(255,255,255,0.06);
+  --track:rgba(255,255,255,0.10);
+  --shadow:0 30px 70px -30px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,210,170,0.06) inset;
+  --shadow-sm:0 12px 30px -16px rgba(0,0,0,0.6);
+  --sky-1:#3a2418; --sky-2:#2a1820; --sky-3:#1d1418;
+  --blob-a:rgba(255,150,80,0.30); --blob-b:rgba(210,90,120,0.26); --blob-c:rgba(255,200,110,0.22);
+  --danger:#ff7a6b;
+}
+html[data-mode="light"] {
+  --text:#3c2c20; --muted:#8a6f5a; --muted-2:#ad917a;
+  --amber:#e3891b; --amber-deep:#c6741a; --coral:#e0552c; --gold:#d39a3a; --sage:#7d8b54;
+  --glass:rgba(255,250,243,0.58); --glass-2:rgba(255,246,235,0.62); --glass-3:rgba(255,243,230,0.8);
+  --glass-brd:rgba(255,255,255,0.75); --glass-brd-2:rgba(200,140,80,0.30); --glass-hi:rgba(255,255,255,0.6);
+  --track:rgba(120,80,40,0.14);
+  --shadow:0 30px 60px -28px rgba(190,110,60,0.45), 0 0 0 1px rgba(255,255,255,0.5) inset;
+  --shadow-sm:0 12px 28px -16px rgba(190,110,60,0.4);
+  --sky-1:#fdeede; --sky-2:#fbe0cb; --sky-3:#f6d4c4;
+  --blob-a:rgba(255,180,120,0.55); --blob-b:rgba(255,150,170,0.40); --blob-c:rgba(255,215,150,0.55);
+  --danger:#d8442e;
+}
 
-    .btn-cyber {
-      position: relative;
-      background: linear-gradient(135deg, rgba(0,245,255,0.1), rgba(255,0,170,0.1));
-      border: 1px solid rgba(0,245,255,0.3);
-      color: #00f5ff;
-      padding: 10px 24px;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      letter-spacing: 1px;
-    }
-    .btn-cyber:hover {
-      background: linear-gradient(135deg, rgba(0,245,255,0.2), rgba(255,0,170,0.2));
-      box-shadow: 0 0 25px rgba(0,245,255,0.25);
-      transform: translateY(-2px);
-    }
-    .btn-cyber:active { transform: translateY(0px); }
-    .btn-cyber.reset { border-color: rgba(255,0,170,0.3); color: #ff00aa; }
-    .btn-cyber.reset:hover { box-shadow: 0 0 25px rgba(255,0,170,0.25); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  color: var(--text);
+  font-family: 'Sora', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden; height: 100%;
+  background:
+    radial-gradient(60% 50% at 18% 12%, var(--blob-a), transparent 60%),
+    radial-gradient(55% 45% at 85% 22%, var(--blob-b), transparent 62%),
+    radial-gradient(70% 60% at 70% 100%, var(--blob-c), transparent 60%),
+    linear-gradient(160deg, var(--sky-1) 0%, var(--sky-2) 52%, var(--sky-3) 100%);
+}
+button { font-family: inherit; }
+::selection { background: var(--amber); color: #2a1605; }
 
-    .xp-bar-track {
-      width: 100%;
-      height: 12px;
-      background: var(--xp-track-bg);
-      border-radius: 6px;
-      overflow: hidden;
-      border: 1px solid var(--xp-track-border);
-    }
-    .xp-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #00f5ff, #39ff14);
-      border-radius: 6px;
-      transition: width 0.5s ease;
-      box-shadow: 0 0 15px rgba(57,255,20,0.3);
-    }
+.app { height: 100%; display: flex; flex-direction: column; padding: 16px; gap: 13px; }
 
-    .timer-digits {
-      font-size: 4.5rem;
-      font-weight: 800;
-      letter-spacing: 6px;
-      background: linear-gradient(135deg, #00f5ff, #ff00aa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      line-height: 1;
-    }
-    @media (max-width: 480px) {
-      .timer-digits { font-size: 3rem; }
-    }
+/* top bar */
+.topbar {
+  flex-shrink: 0; height: 54px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; background: var(--glass); backdrop-filter: blur(22px) saturate(1.3);
+  -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  border: 1px solid var(--glass-brd); border-radius: 18px; box-shadow: var(--shadow);
+}
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.brand-mark { width: 26px; height: 26px; border-radius: 9px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--amber), var(--coral));
+  display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px -4px var(--coral); }
+.brand-mark::after { content:''; width:9px; height:9px; border-radius:50%; background:#fff; opacity:.92; }
+.brand-name { font-weight: 700; font-size: 15px; letter-spacing: .01em; white-space: nowrap; }
+.brand-name b { color: var(--amber); }
+.pill { font-family:'JetBrains Mono',monospace; font-size: 9px; letter-spacing: .22em; color: var(--amber-deep);
+  border: 1px solid var(--glass-brd); padding: 3px 8px; border-radius: 8px; background: var(--glass-hi); }
+.topbar-right, .topbar-left { display: flex; align-items: center; gap: 8px; }
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 11px; flex-shrink: 0;
+  border: 1px solid var(--glass-brd); background: var(--glass-hi); color: var(--muted);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; transition: .2s;
+}
+.icon-btn:hover { color: var(--amber); border-color: var(--glass-brd-2); transform: translateY(-1px); }
+.icon-btn:active { transform: translateY(0); }
+.icon-btn.drawer-btn { display: none; }
 
-    /* ---- SLIME ---- */
-    .slime-container {
-      position: relative;
-      width: 200px;
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto;
-      animation: float 2s ease-in-out infinite;
-    }
-    .target-slime {
-      animation: slimeBreath 2.5s ease-in-out infinite;
-      transform-origin: bottom center;
-      transition: all 0.5s ease;
-    }
-    @keyframes slimeBreath {
-      0%, 100% { transform: scale(1, 1); }
-      50% { transform: scale(1.06, 0.94); }
-    }
+/* body */
+.body { flex: 1; display: flex; gap: 13px; min-height: 0; }
 
-    @keyframes blinkAnim {
-      0%, 90%, 100% { opacity: 1; }
-      95% { opacity: 0; }
-    }
-    .blink-eye {
-      animation: blinkAnim 4s ease-in-out infinite;
-      animation-delay: var(--blink-delay, 0s);
-    }
+/* docks */
+.dock {
+  width: 78px; flex-shrink: 0; background: var(--glass); backdrop-filter: blur(22px) saturate(1.3);
+  -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  border: 1px solid var(--glass-brd); border-radius: 22px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; padding: 12px 0; gap: 8px;
+  transition: width .32s cubic-bezier(.2,.7,.3,1);
+  overflow: hidden;
+}
+.dock.expanded { width: 250px; }
 
-    @keyframes mouthTalk {
-      0%, 100% { d: path("M 85,145 Q 100,155 115,145"); }
-      50% { d: path("M 85,145 Q 100,150 115,145"); }
-    }
-    @keyframes mouthTalk2 {
-      0%, 100% { d: path("M 88,145 Q 100,153 112,145"); }
-      50% { d: path("M 88,145 Q 100,148 112,145"); }
-    }
-    @keyframes mouthTalk3 {
-      0%, 100% { d: path("M 85,143 Q 100,150 115,140"); }
-      50% { d: path("M 85,143 Q 100,145 115,140"); }
-    }
-    .mouth-talk { animation: mouthTalk 3s ease-in-out infinite; transform-origin: center; }
-    .mouth-talk-lv2 { animation: mouthTalk2 3s ease-in-out infinite; transform-origin: center; }
-    .mouth-talk-lv3 { animation: mouthTalk3 3s ease-in-out infinite; transform-origin: center; }
+.dock-top { display: flex; align-items: center; justify-content: space-between; padding: 2px 14px 6px; min-height: 26px; }
+.dock-name { font-family:'JetBrains Mono',monospace; font-size: 10px; letter-spacing: .22em; color: var(--muted-2);
+  white-space: nowrap; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.dock.expanded .dock-name { opacity: 1; }
+.dock-toggle { width: 26px; height: 26px; border-radius: 8px; border: 1px solid var(--glass-brd); background: var(--glass-hi);
+  color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: .2s; flex-shrink: 0; margin-left: auto; }
+.dock-toggle:hover { color: var(--amber); }
+.dock-toggle svg { transition: transform .32s cubic-bezier(.2,.7,.3,1); }
+.dock.right .dock-toggle svg { transform: scaleX(-1); }
+.dock.expanded .dock-toggle svg { transform: scaleX(-1); }
+.dock.right.expanded .dock-toggle svg { transform: scaleX(1); }
+.dock-close { display: none; width: 30px; height: 30px; border-radius: 9px; border: 1px solid var(--glass-brd);
+  background: var(--glass-hi); color: var(--muted); cursor: pointer; align-items: center; justify-content: center;
+  margin-left: auto; font-size: 19px; line-height: 1; }
 
-    @keyframes glowPulse {
-      0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 4px var(--gel-accent, #00ffff)); }
-      50% { opacity: 1; filter: drop-shadow(0 0 14px var(--gel-accent, #00ffff)); }
-    }
-    .glow-pulse { animation: pulseVisor 3s ease-in-out infinite; }
-    @keyframes pulseVisor {
-      0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 5px #00ffff); }
-      50% { opacity: 1; filter: drop-shadow(0 0 15px #00ffff); }
-    }
+.dock-scroll { flex: 1; display: flex; flex-direction: column; gap: 7px; padding: 2px 13px; overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: thin; scrollbar-color: var(--glass-brd-2) transparent; }
+.dock-scroll::-webkit-scrollbar { width: 5px; }
+.dock-scroll::-webkit-scrollbar-thumb { background: var(--glass-brd-2); border-radius: 9px; }
 
-    .level-badge {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      width: 32px;
-      height: 32px;
-      background: linear-gradient(135deg, #ff00aa, #ff6600);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 800;
-      color: #fff;
-      box-shadow: 0 0 15px rgba(255,0,170,0.5);
-      border: 2px solid rgba(255,255,255,0.2);
-    }
+/* projects */
+.proj {
+  position: relative; display: flex; align-items: center; gap: 11px; padding: 7px;
+  border-radius: 15px; cursor: pointer; border: 1px solid transparent; transition: background .18s, border-color .18s;
+  user-select: none;
+}
+.proj:hover { background: var(--glass-hi); }
+.proj.active { background: var(--glass-2); border-color: var(--glass-brd-2); }
+.proj.dragging { opacity: .4; }
+.proj.drag-over { border-color: var(--amber); background: var(--glass-hi); }
+.proj-ico { width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 16px; color: #2a1505; box-shadow: 0 7px 16px -8px rgba(0,0,0,.5); position: relative; }
+.proj-ico .lv { position: absolute; bottom: -5px; right: -5px; background: var(--glass-3); backdrop-filter: blur(6px);
+  border: 1px solid var(--glass-brd); color: var(--amber); font-family:'JetBrains Mono',monospace; font-size: 8px; font-weight: 700;
+  padding: 1px 4px; border-radius: 7px; }
+.proj.active .proj-ico { box-shadow: 0 0 0 2.5px var(--amber), 0 7px 16px -8px rgba(0,0,0,.5); }
+.proj-info { min-width: 0; flex: 1; opacity: 0; width: 0; overflow: hidden; transition: opacity .2s; }
+.dock.expanded .proj-info { opacity: 1; width: auto; }
+.proj-name { font-size: 13.5px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proj-name-input { width: 100%; background: var(--glass-hi); border: 1px solid var(--amber); border-radius: 6px; color: var(--text);
+  font-family: inherit; font-size: 13.5px; font-weight: 600; padding: 2px 5px; outline: none; }
+.proj-meta { font-family:'JetBrains Mono',monospace; font-size: 9.5px; color: var(--muted-2); margin-top: 2px; white-space: nowrap; }
+.proj.active .proj-meta { color: var(--coral); }
+.proj-actions { display: none; gap: 2px; flex-shrink: 0; }
+.dock.expanded .proj-actions { display: flex; }
+.pa-btn { width: 24px; height: 24px; border-radius: 7px; border: none; background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; color: var(--muted-2); transition: .15s; }
+.pa-btn:hover { background: var(--glass-hi); color: var(--amber); }
+.pa-btn.del:hover { color: var(--danger); background: rgba(255,90,70,.12); }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
+.dock-add {
+  margin: 4px 13px 0; flex-shrink: 0; height: 46px; border-radius: 15px; border: 1px dashed var(--glass-brd-2);
+  background: var(--glass-hi); color: var(--muted); cursor: pointer; transition: .2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 600;
+}
+.dock-add:hover { color: var(--amber); border-color: var(--amber); }
+.dock-add .plus { font-size: 22px; line-height: 1; }
+.dock-add .lbl { display: none; }
+.dock.expanded .dock-add .lbl { display: inline; }
 
-    .bandana-tails {
-      transform-origin: 160px 95px;
-      animation: windBlow 2.5s ease-in-out infinite alternate;
-    }
-    @keyframes windBlow {
-      0% { transform: rotate(0deg) skewY(0deg); }
-      100% { transform: rotate(-12deg) skewY(-5deg); }
-    }
+/* rules / stats */
+.rail-icons { display: flex; flex-direction: column; align-items: center; gap: 9px; padding: 2px 0; }
+.dock.expanded .rail-icons { display: none; }
+.rail-ico { width: 46px; height: 46px; border-radius: 14px; border: 1px solid var(--glass-brd); background: var(--glass-hi);
+  color: var(--muted); cursor: pointer; transition: .2s; display: flex; align-items: center; justify-content: center; }
+.rail-ico:hover { color: var(--amber); border-color: var(--glass-brd-2); }
+.rail-mini { margin-top: auto; text-align: center; font-family:'JetBrains Mono',monospace; padding-top: 8px; }
+.dock.expanded .rail-mini { display: none; }
+.rail-mini .v { font-size: 12px; font-weight: 700; color: var(--coral); }
+.rail-mini .k { font-size: 7px; letter-spacing: .16em; color: var(--muted-2); margin-top: 2px; }
 
-    .ssj-aura {
-      transform-origin: 100px 100px;
-      animation: auraPulse 0.8s ease-in-out infinite alternate;
-    }
-    @keyframes auraPulse {
-      0% { transform: scale(0.9) rotate(0deg); opacity: 0.4; }
-      100% { transform: scale(1.15) rotate(5deg); opacity: 0.9; }
-    }
-    .bandana-tails-lvl3 {
-      transform-origin: 160px 95px;
-      animation: windBlowHard 1s ease-in-out infinite alternate;
-    }
-    @keyframes windBlowHard {
-      0% { transform: rotate(0deg) skewY(0deg); }
-      100% { transform: rotate(-25deg) skewY(-10deg); }
-    }
-    .lightning-sparks { animation: sparkFlash 2s steps(1) infinite; }
-    @keyframes sparkFlash {
-      0%, 20%, 40%, 100% { opacity: 0; }
-      10%, 30% { opacity: 1; }
-    }
-    @keyframes slimeFloatFast {
-      0%, 100% { transform: translateY(-5px) scale(1, 1); }
-      50% { transform: translateY(-20px) scale(0.95, 1.05); }
-    }
+.panel-full { display: none; flex-direction: column; gap: 11px; }
+.dock.expanded .panel-full { display: flex; }
+.dock.show-stats .panel-rules { display: none; }
+.dock.show-rules .panel-stats { display: none; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat-card { background: var(--glass-hi); border: 1px solid var(--glass-brd); border-radius: 13px; padding: 11px 12px; }
+.stat-card .v { font-family:'JetBrains Mono',monospace; font-size: 18px; font-weight: 800; color: var(--amber); }
+.stat-card .k { font-size: 9px; letter-spacing: .12em; color: var(--muted-2); margin-top: 3px; text-transform: uppercase; }
+.rules-sec { background: var(--glass-hi); border: 1px solid var(--glass-brd); border-radius: 13px; padding: 11px 12px; }
+.rules-sec h4 { font-family:'JetBrains Mono',monospace; font-size: 10px; letter-spacing: .16em; color: var(--coral);
+  margin-bottom: 9px; padding-bottom: 7px; border-bottom: 1px solid var(--glass-brd); }
+.rule { margin-bottom: 8px; }
+.rule:last-child { margin-bottom: 0; }
+.rule .k { display: block; font-size: 10px; color: var(--muted-2); letter-spacing: .04em; margin-bottom: 1px; }
+.rule .d { display: block; font-size: 12px; color: var(--muted); line-height: 1.35; }
+.rule .d b { color: var(--amber); font-weight: 700; }
+.form-list { display: flex; flex-direction: column; gap: 6px; }
+.form-row { display: flex; align-items: center; gap: 9px; font-size: 11.5px; color: var(--muted); }
+.form-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.form-row b { color: var(--text); font-weight: 600; }
+.form-row .lv { font-family:'JetBrains Mono',monospace; font-size: 9px; color: var(--muted-2); margin-left: auto; }
 
-    .cyber-drones {
-      transform-origin: 100px 100px;
-      animation: droneOrbit 4s linear infinite;
-    }
-    @keyframes droneOrbit {
-      0% { transform: rotateZ(0deg) scale(1); }
-      50% { transform: rotateZ(180deg) scale(0.9); opacity: 0.7; }
-      100% { transform: rotateZ(360deg) scale(1); }
-    }
-    .cylon-scanner { animation: scanEye 2s ease-in-out infinite alternate; }
-    @keyframes scanEye {
-      0% { transform: translateX(-45px); }
-      100% { transform: translateX(45px); }
-    }
-    @keyframes mechaHover {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-15px); }
-    }
+/* center card */
+.card {
+  flex: 1; min-width: 0; background: var(--glass); backdrop-filter: blur(26px) saturate(1.4);
+  -webkit-backdrop-filter: blur(26px) saturate(1.4);
+  border: 1px solid var(--glass-brd); border-radius: 30px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  padding: 30px 22px 26px; position: relative; overflow: hidden;
+}
+.card::before { content:''; position: absolute; inset: 0 0 auto 0; height: 45%;
+  background: linear-gradient(180deg, var(--glass-hi), transparent); pointer-events: none; }
+.card > * { position: relative; }
 
-    .divine-halo-bg {
-      transform-origin: 100px 110px;
-      animation: haloSpinBg 15s linear infinite;
-    }
-    .divine-halo-fg {
-      transform-origin: 100px 110px;
-      animation: haloSpinFg 10s linear infinite reverse;
-    }
-    @keyframes haloSpinBg {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    @keyframes haloSpinFg {
-      0% { transform: rotate(0deg) scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: rotate(360deg) scale(1); }
-    }
-    .energy-wings {
-      transform-origin: 100px 80px;
-      animation: wingsFlap 4s ease-in-out infinite alternate;
-    }
-    @keyframes wingsFlap {
-      0% { transform: scaleY(0.95) scaleX(0.95); opacity: 0.7; }
-      100% { transform: scaleY(1.1) scaleX(1.05); opacity: 1; }
-    }
-    .cosmic-core, .third-eye {
-      animation: starPulse 2s ease-in-out infinite alternate;
-      transform-origin: center;
-    }
-    @keyframes starPulse {
-      0% { transform: scale(0.8); opacity: 0.6; }
-      100% { transform: scale(1.2); opacity: 1; }
-    }
-    @keyframes cosmicHover {
-      0%, 100% { transform: translateY(-5px); }
-      50% { transform: translateY(-25px); }
-    }
+.stage { position: relative; width: 168px; height: 168px; display: flex; align-items: center; justify-content: center; }
+.slime-wrap { width: 100%; height: 100%; animation: float 4s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
 
-    .sacred-geometry {
-      transform-origin: 100px 110px;
-      animation: geometrySpin 20s linear infinite;
-    }
-    @keyframes geometrySpin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .omega-core, .eclipse-corona {
-      transform-origin: 100px 115px;
-      animation: corePulse 3s ease-in-out infinite alternate;
-    }
-    @keyframes corePulse {
-      0% { transform: scale(0.9); opacity: 0.8; }
-      100% { transform: scale(1.15); opacity: 1; }
-    }
-    .event-horizon, .event-horizon-inner {
-      transform-origin: 100px 120px;
-      animation: horizonTilt 5s ease-in-out infinite alternate;
-    }
-    @keyframes horizonTilt {
-      0% { transform: rotateX(20deg) rotateZ(-5deg) scaleX(0.95); }
-      100% { transform: rotateX(-20deg) rotateZ(5deg) scaleX(1.05); }
-    }
-    .omega-particles {
-      transform-origin: 100px 110px;
-      animation: particleOrbit 12s linear infinite reverse;
-    }
-    @keyframes particleOrbit {
-      0% { transform: rotate(0deg) scale(1); }
-      50% { transform: rotate(-180deg) scale(1.1); }
-      100% { transform: rotate(-360deg) scale(1); }
-    }
-    @keyframes omegaHover {
-      0%, 100% { transform: translateY(-10px); }
-      50% { transform: translateY(-15px); }
-    }
+#slime { width: 100%; height: 100%; overflow: visible; display: block; transform-origin: bottom center; }
 
-    .particle {
-      position: fixed;
-      pointer-events: none;
-      border-radius: 50%;
-      animation: particleUp 1.2s ease-out forwards;
-    }
-    @keyframes particleUp {
-      0% { transform: translate(0,0) scale(1); opacity: 1; }
-      100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
-    }
+.lv-badge {
+  position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 11px 0 8px; border-radius: 99px;
+  background: linear-gradient(135deg, var(--amber), var(--coral)); color: #2a1605;
+  font-weight: 800; font-size: 13px; font-family:'JetBrains Mono',monospace;
+  box-shadow: 0 8px 20px -7px var(--coral); border: 2px solid var(--glass-hi); white-space: nowrap; z-index: 3;
+}
+.lv-badge .star { width: 12px; height: 12px; }
 
-    .toast {
-      position: fixed;
-      top: 30px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-80px);
-      background: var(--toast-bg);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--toast-border);
-      padding: 14px 32px;
-      border-radius: 12px;
-      color: var(--toast-text);
-      font-weight: 700;
-      font-size: 1.1rem;
-      text-align: center;
-      opacity: 0;
-      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 100;
-      pointer-events: none;
-    }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+.lvline { font-size: 13px; font-weight: 600; color: var(--muted); margin-top: 10px; text-align: center; }
+.lvline b { color: var(--text); }
 
-    /* ---- PROJECT GALLERY (sidebar) ---- */
-    .gallery-container {
-      background: var(--gallery-bg);
-      border: 1px solid var(--gallery-border);
-      border-radius: 16px;
-      padding: 12px;
-      backdrop-filter: blur(8px);
-      height: fit-content;
-    }
-    .gallery-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .gallery-title {
-      color: var(--text-muted);
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 3px;
-    }
-    .gallery-add-btn {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: rgba(0,245,255,0.1);
-      border: 1px solid rgba(0,245,255,0.3);
-      color: #00f5ff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      font-weight: 700;
-      line-height: 1;
-      transition: all 0.2s;
-    }
-    .gallery-add-btn:hover {
-      background: rgba(0,245,255,0.2);
-      transform: scale(1.1);
-    }
-    .gallery-scroll {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-height: 60vh;
-      overflow-y: auto;
-      padding-right: 4px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--scrollbar-thumb) transparent;
-    }
-    .gallery-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      background: var(--item-bg);
-      border: 1px solid var(--item-border);
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .gallery-item:hover {
-      background: var(--item-bg-hover);
-      border-color: var(--item-border-hover);
-    }
-    .gallery-item.active {
-      background: var(--item-bg-active);
-      border-color: var(--item-border-active);
-      box-shadow: 0 0 15px rgba(0,245,255,0.1);
-    }
-    .gallery-item-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      border: 1px solid var(--item-icon-border);
-    }
-    .gallery-item-info {
-      flex: 1;
-      min-width: 0;
-    }
-    .gallery-item-name {
-      color: var(--text);
-      font-size: 0.72rem;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      cursor: text;
-    }
-    .gallery-item-name:hover {
-      color: #00f5ff;
-    }
-    .gallery-item-name-input {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      border-radius: 4px;
-      color: var(--input-text);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 2px 4px;
-      outline: none;
-    }
-    .gallery-item-meta {
-      color: var(--text-muted2);
-      font-size: 0.6rem;
-      letter-spacing: 1px;
-      display: flex;
-      gap: 6px;
-    }
-    .gallery-item-actions {
-      display: flex;
-      gap: 2px;
-      flex-shrink: 0;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    .gallery-item:hover .gallery-item-actions { opacity: 1; }
-    .gallery-item-action-btn {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      font-size: 0.8rem;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    .gallery-item-action-btn.rename {
-      color: rgba(0,245,255,0.4);
-    }
-    .gallery-item-action-btn.rename:hover {
-      background: rgba(0,245,255,0.15);
-      color: #00f5ff;
-    }
-    .gallery-item-action-btn.delete {
-      color: rgba(255,0,170,0.4);
-    }
-    .gallery-item-action-btn.delete:hover {
-      background: rgba(255,0,170,0.15);
-      color: #ff00aa;
-    }
-    .gallery-item.dragging {
-      opacity: 0.3;
-      border-color: rgba(0,245,255,0.5);
-      border-style: dashed;
-    }
-    .gallery-item.drag-over {
-      border-color: rgba(0,245,255,0.8) !important;
-      background: rgba(0,245,255,0.15) !important;
-    }
-    .gallery-item {
-      cursor: grab;
-    }
-    .gallery-item:active {
-      cursor: grabbing;
-    }
+.xpwrap { width: min(300px, 78%); margin: 11px 0 2px; }
+.xprow { display: flex; justify-content: space-between; font-family:'JetBrains Mono',monospace; font-size: 10px; color: var(--muted-2); margin-bottom: 6px; }
+.xprow .cur { color: var(--amber); }
+.track { height: 9px; border-radius: 99px; background: var(--track); overflow: hidden; }
+.fill { height: 100%; width: 0%; border-radius: 99px; background: linear-gradient(90deg, var(--amber-deep), var(--gold));
+  box-shadow: 0 0 16px -2px var(--amber); transition: width .55s cubic-bezier(.2,.7,.3,1); }
 
-    /* responsive: stack on mobile */
-    @media (max-width: 640px) {
-      .app-layout {
-        flex-direction: column !important;
-      }
-      .gallery-container {
-        width: 100% !important;
-        max-height: none !important;
-      }
-      .gallery-scroll {
-        flex-direction: row !important;
-        overflow-y: hidden !important;
-        overflow-x: auto !important;
-        max-height: none !important;
-      }
-      .gallery-item {
-        min-width: 120px;
-        max-width: 160px;
-        flex-shrink: 0;
-      }
-    }
+.timer { font-family:'JetBrains Mono',monospace; font-weight: 800; font-size: clamp(54px, 11vw, 78px); line-height: 1; margin-top: 16px;
+  color: var(--text); font-variant-numeric: tabular-nums; text-shadow: 0 4px 26px rgba(0,0,0,.18); }
+.timer .colon { color: var(--amber); }
+.timer.running .colon { animation: blinkc 2s steps(1) infinite; }
+@keyframes blinkc { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-    /* ---- RULES PANEL ---- */
-    .rules-container {
-      background: var(--rules-bg);
-      border: 1px solid var(--rules-border);
-      border-radius: 16px;
-      padding: 12px;
-      backdrop-filter: blur(8px);
-      height: fit-content;
-    }
-    .rules-title {
-      color: var(--text-muted);
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 3px;
-      margin-bottom: 10px;
-    }
-    .rules-scroll {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-height: 60vh;
-      overflow-y: auto;
-      padding-right: 4px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--scrollbar-thumb) transparent;
-    }
-    .rules-section {
-      background: var(--item-bg);
-      border: 1px solid var(--rules-item-border);
-      border-radius: 10px;
-      padding: 10px;
-    }
-    .rules-section-title {
-      color: var(--rules-section-title);
-      font-size: 0.6rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      margin-bottom: 8px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--rules-item-border);
-    }
-    .rules-item {
-      margin-bottom: 6px;
-    }
-    .rules-item:last-child {
-      margin-bottom: 0;
-    }
-    .rules-label {
-      display: block;
-      color: var(--text-muted2);
-      font-size: 0.6rem;
-      letter-spacing: 1px;
-      margin-bottom: 1px;
-    }
-    .rules-desc {
-      display: block;
-      color: var(--rules-text);
-      font-size: 0.7rem;
-      line-height: 1.3;
-    }
+.phase { display: inline-flex; align-items: center; gap: 8px; margin-top: 11px;
+  font-family:'JetBrains Mono',monospace; font-size: 11px; letter-spacing: .26em; color: var(--coral);
+  padding: 5px 15px; border-radius: 99px; border: 1px solid var(--glass-brd); background: var(--glass-hi); }
+.phase.break { color: var(--sage); }
+.phase .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
+.phase.live .dot { animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.8)} }
 
-    @media (max-width: 640px) {
-      .rules-container {
-        width: 100% !important;
-        max-height: none !important;
-      }
-      .rules-scroll {
-        flex-direction: row !important;
-        overflow-y: hidden !important;
-        overflow-x: auto !important;
-        max-height: none !important;
-      }
-      .rules-section {
-        min-width: 160px;
-        max-width: 200px;
-        flex-shrink: 0;
-      }
-    }
+.controls { display: flex; gap: 12px; margin-top: 20px; }
+.btn { font-family:'Sora',sans-serif; font-weight: 700; font-size: 13px; letter-spacing: .1em; padding: 13px 34px;
+  border-radius: 16px; cursor: pointer; transition: transform .15s, box-shadow .2s, background .2s; border: 1px solid transparent; }
+.btn:active { transform: scale(.96); }
+.btn.primary { background: linear-gradient(135deg, var(--amber), var(--amber-deep)); color: #2a1605; box-shadow: 0 14px 30px -12px var(--amber-deep); min-width: 130px; }
+.btn.primary:hover { transform: translateY(-2px); box-shadow: 0 18px 36px -12px var(--amber-deep); }
+.btn.ghost { background: var(--glass-hi); border-color: var(--glass-brd); color: var(--coral); backdrop-filter: blur(8px); }
+.btn.ghost:hover { background: var(--glass-2); transform: translateY(-2px); }
 
-    /* ---- LEVEL UP ANIMATION ---- */
-    .level-up-anim {
-      animation: levelUpFlash 0.8s ease-out !important;
-    }
-    @keyframes levelUpFlash {
-      0% { transform: scale(1) rotate(0deg); filter: brightness(1); }
-      25% { transform: scale(1.3) rotate(-3deg); filter: brightness(2.5); }
-      50% { transform: scale(0.9) rotate(2deg); filter: brightness(1.5); }
-      75% { transform: scale(1.1) rotate(-1deg); filter: brightness(2); }
-      100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
-    }
+/* level-up */
+.stage.levelup .slime-wrap { animation: levelUp .9s cubic-bezier(.3,1.4,.5,1); }
+@keyframes levelUp {
+  0% { transform: scale(1) rotate(0); filter: brightness(1); }
+  25% { transform: scale(1.32) rotate(-4deg); filter: brightness(1.9) drop-shadow(0 0 30px var(--amber)); }
+  55% { transform: scale(.92) rotate(3deg); filter: brightness(1.4); }
+  80% { transform: scale(1.08) rotate(-1deg); filter: brightness(1.5); }
+  100% { transform: scale(1) rotate(0); filter: brightness(1); }
+}
+.lv-badge.bump { animation: badgeBump .6s cubic-bezier(.3,1.5,.5,1); }
+@keyframes badgeBump { 0%,100%{transform:translateX(-50%) scale(1)} 40%{transform:translateX(-50%) scale(1.4)} }
 
-    /* ---- DEV PANEL ---- */
-    .dev-panel {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--dev-bg);
-      border-top: 2px solid rgba(255,0,170,0.4);
-      backdrop-filter: blur(12px);
-      padding: 12px 20px;
-      transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 200;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      justify-content: center;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .dev-panel.show { transform: translateY(0); }
-    .dev-panel .dev-label {
-      color: #ff00aa;
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      margin-right: 8px;
-      text-shadow: 0 0 12px rgba(255,0,170,0.5);
-    }
-    .dev-btn {
-      background: rgba(255,0,170,0.1);
-      border: 1px solid rgba(255,0,170,0.3);
-      color: #ff00aa;
-      padding: 6px 14px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      letter-spacing: 1px;
-      border-radius: 4px;
-    }
-    .dev-btn:hover {
-      background: rgba(255,0,170,0.25);
-      box-shadow: 0 0 15px rgba(255,0,170,0.2);
-    }
-    .dev-btn.active {
-      background: rgba(0,245,255,0.2);
-      border-color: rgba(0,245,255,0.5);
-      color: #00f5ff;
-    }
-    .dev-btn.speed { min-width: 44px; text-align: center; }
-    .theme-toggle {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: var(--text-muted);
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      transition: all 0.3s ease;
-    }
-    .theme-toggle:hover {
-      background: rgba(0,245,255,0.15);
-      border-color: rgba(0,245,255,0.4);
-      color: #00f5ff;
-    }
-    .dev-hint {
-      color: var(--text-muted3);
-      font-size: 0.6rem;
-      letter-spacing: 1px;
-      margin-left: auto;
-    }
-  </style>
+/* ---- SLIME ANIMATIONS (current system) ---- */
+@keyframes slimeBreath {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.06, 0.94); }
+}
+@keyframes blinkAnim {
+  0%, 90%, 100% { opacity: 1; }
+  95% { opacity: 0; }
+}
+.blink-eye {
+  animation: blinkAnim 4s ease-in-out infinite;
+  animation-delay: var(--blink-delay, 0s);
+}
+@keyframes mouthTalk {
+  0%, 100% { d: path("M 85,145 Q 100,155 115,145"); }
+  50% { d: path("M 85,145 Q 100,150 115,145"); }
+}
+@keyframes mouthTalk2 {
+  0%, 100% { d: path("M 88,145 Q 100,153 112,145"); }
+  50% { d: path("M 88,145 Q 100,148 112,145"); }
+}
+@keyframes mouthTalk3 {
+  0%, 100% { d: path("M 85,143 Q 100,150 115,140"); }
+  50% { d: path("M 85,143 Q 100,145 115,140"); }
+}
+.mouth-talk { animation: mouthTalk 3s ease-in-out infinite; transform-origin: center; }
+.mouth-talk-lv2 { animation: mouthTalk2 3s ease-in-out infinite; transform-origin: center; }
+.mouth-talk-lv3 { animation: mouthTalk3 3s ease-in-out infinite; transform-origin: center; }
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 4px var(--gel-accent, #00ffff)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 14px var(--gel-accent, #00ffff)); }
+}
+.glow-pulse { animation: pulseVisor 3s ease-in-out infinite; }
+@keyframes pulseVisor {
+  0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 5px #00ffff); }
+  50% { opacity: 1; filter: drop-shadow(0 0 15px #00ffff); }
+}
+.bandana-tails {
+  transform-origin: 160px 95px;
+  animation: windBlow 2.5s ease-in-out infinite alternate;
+}
+@keyframes windBlow {
+  0% { transform: rotate(0deg) skewY(0deg); }
+  100% { transform: rotate(-12deg) skewY(-5deg); }
+}
+.ssj-aura {
+  transform-origin: 100px 100px;
+  animation: auraPulse 0.8s ease-in-out infinite alternate;
+}
+@keyframes auraPulse {
+  0% { transform: scale(0.9) rotate(0deg); opacity: 0.4; }
+  100% { transform: scale(1.15) rotate(5deg); opacity: 0.9; }
+}
+.bandana-tails-lvl3 {
+  transform-origin: 160px 95px;
+  animation: windBlowHard 1s ease-in-out infinite alternate;
+}
+@keyframes windBlowHard {
+  0% { transform: rotate(0deg) skewY(0deg); }
+  100% { transform: rotate(-25deg) skewY(-10deg); }
+}
+.lightning-sparks { animation: sparkFlash 2s steps(1) infinite; }
+@keyframes sparkFlash {
+  0%, 20%, 40%, 100% { opacity: 0; }
+  10%, 30% { opacity: 1; }
+}
+@keyframes slimeFloatFast {
+  0%, 100% { transform: translateY(-5px) scale(1, 1); }
+  50% { transform: translateY(-20px) scale(0.95, 1.05); }
+}
+.cyber-drones {
+  transform-origin: 100px 100px;
+  animation: droneOrbit 4s linear infinite;
+}
+@keyframes droneOrbit {
+  0% { transform: rotateZ(0deg) scale(1); }
+  50% { transform: rotateZ(180deg) scale(0.9); opacity: 0.7; }
+  100% { transform: rotateZ(360deg) scale(1); }
+}
+.cylon-scanner { animation: scanEye 2s ease-in-out infinite alternate; }
+@keyframes scanEye {
+  0% { transform: translateX(-45px); }
+  100% { transform: translateX(45px); }
+}
+@keyframes mechaHover {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+.divine-halo-bg {
+  transform-origin: 100px 110px;
+  animation: haloSpinBg 15s linear infinite;
+}
+.divine-halo-fg {
+  transform-origin: 100px 110px;
+  animation: haloSpinFg 10s linear infinite reverse;
+}
+@keyframes haloSpinBg {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes haloSpinFg {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+.energy-wings {
+  transform-origin: 100px 80px;
+  animation: wingsFlap 4s ease-in-out infinite alternate;
+}
+@keyframes wingsFlap {
+  0% { transform: scaleY(0.95) scaleX(0.95); opacity: 0.7; }
+  100% { transform: scaleY(1.1) scaleX(1.05); opacity: 1; }
+}
+.cosmic-core, .third-eye {
+  animation: starPulse 2s ease-in-out infinite alternate;
+  transform-origin: center;
+}
+@keyframes starPulse {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+@keyframes cosmicHover {
+  0%, 100% { transform: translateY(-5px); }
+  50% { transform: translateY(-25px); }
+}
+.sacred-geometry {
+  transform-origin: 100px 110px;
+  animation: geometrySpin 20s linear infinite;
+}
+@keyframes geometrySpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.omega-core, .eclipse-corona {
+  transform-origin: 100px 115px;
+  animation: corePulse 3s ease-in-out infinite alternate;
+}
+@keyframes corePulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  100% { transform: scale(1.15); opacity: 1; }
+}
+.event-horizon, .event-horizon-inner {
+  transform-origin: 100px 120px;
+  animation: horizonTilt 5s ease-in-out infinite alternate;
+}
+@keyframes horizonTilt {
+  0% { transform: rotateX(20deg) rotateZ(-5deg) scaleX(0.95); }
+  100% { transform: rotateX(-20deg) rotateZ(5deg) scaleX(1.05); }
+}
+.omega-particles {
+  transform-origin: 100px 110px;
+  animation: particleOrbit 12s linear infinite reverse;
+}
+@keyframes particleOrbit {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(-180deg) scale(1.1); }
+  100% { transform: rotate(-360deg) scale(1); }
+}
+@keyframes omegaHover {
+  0%, 100% { transform: translateY(-10px); }
+  50% { transform: translateY(-15px); }
+}
+
+/* particles */
+.particle { position: fixed; pointer-events: none; border-radius: 50%; z-index: 250; animation: pUp 1.2s ease-out forwards; }
+@keyframes pUp { 0%{transform:translate(0,0) scale(1); opacity:1} 100%{transform:translate(var(--dx),var(--dy)) scale(0); opacity:0} }
+
+/* toast */
+.toast { position: fixed; top: 22px; left: 50%; transform: translateX(-50%) translateY(-90px);
+  display: flex; align-items: center; gap: 10px;
+  background: var(--glass-3); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-brd-2); padding: 12px 22px; border-radius: 14px; color: var(--text);
+  font-weight: 600; font-size: 14px; box-shadow: var(--shadow-sm); z-index: 300; pointer-events: none; opacity: 0;
+  transition: all .5s cubic-bezier(.34,1.56,.64,1); max-width: 90vw; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast .emoji { font-size: 18px; }
+
+/* dev panel */
+.dev { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%) translateY(160%);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; justify-content: center;
+  background: var(--glass-3); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--coral); border-radius: 16px; padding: 11px 16px; z-index: 400;
+  box-shadow: var(--shadow); transition: transform .34s cubic-bezier(.34,1.4,.64,1); max-width: 94vw; }
+.dev.show { transform: translateX(-50%) translateY(0); }
+.dev-label { font-family:'JetBrains Mono',monospace; font-size: 10px; font-weight: 700; letter-spacing: .18em; color: var(--coral); }
+.dev-btn { background: var(--glass-hi); border: 1px solid var(--glass-brd-2); color: var(--text); padding: 6px 12px;
+  font-family:'JetBrains Mono',monospace; font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 9px; transition: .18s; }
+.dev-btn:hover { background: var(--glass-2); color: var(--amber); }
+.dev-btn.speed.active { background: var(--amber); color: #2a1605; border-color: var(--amber); }
+.dev-sep { width: 1px; height: 20px; background: var(--glass-brd-2); }
+.dev-hint { font-family:'JetBrains Mono',monospace; font-size: 9px; color: var(--muted-2); letter-spacing: .1em; }
+
+/* scrim */
+.scrim { position: fixed; inset: 0; background: rgba(20,12,8,.5); backdrop-filter: blur(3px); z-index: 90;
+  opacity: 0; pointer-events: none; transition: opacity .3s; }
+.scrim.show { opacity: 1; pointer-events: auto; }
+
+/* responsive */
+@media (max-width: 960px) {
+  .dock { width: 72px; }
+  .dock.expanded { width: 230px; }
+}
+@media (max-width: 760px) {
+  .app { padding: 10px; gap: 10px; }
+  .topbar { padding: 0 12px; }
+  .pill { display: none; }
+  .icon-btn.drawer-btn { display: flex; }
+  .body { gap: 0; }
+  .card { padding: 26px 16px 22px; border-radius: 26px; }
+  .dock {
+    position: fixed; top: 0; bottom: 0; width: min(86vw, 318px) !important; z-index: 100;
+    border-radius: 0; padding: 16px 0; transition: transform .34s cubic-bezier(.2,.7,.3,1);
+  }
+  .dock.left  { left: 0;  border-radius: 0 24px 24px 0; transform: translateX(-104%); }
+  .dock.right { right: 0; border-radius: 24px 0 0 24px; transform: translateX(104%); }
+  .dock.left.open, .dock.right.open { transform: translateX(0); }
+  .dock .dock-name { opacity: 1; }
+  .dock .proj-info { opacity: 1; width: auto; }
+  .dock .proj-actions { display: flex; }
+  .dock .dock-add .lbl { display: inline; }
+  .dock .rail-icons { display: none; }
+  .dock .panel-full { display: flex; }
+  .dock-toggle { display: none; }
+  .dock-close { display: flex; }
+}
+@media (max-width: 400px) {
+  .controls { width: 100%; }
+  .btn { flex: 1; padding: 13px 10px; }
+  .btn.primary { min-width: 0; }
+}
+@media (max-height: 620px) {
+  .stage { width: 130px; height: 130px; }
+  .timer { margin-top: 8px; }
+  .lvline { margin-top: 6px; }
+  .controls { margin-top: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slime-wrap, #slime, .blink-eye, .mouth-talk, .mouth-talk-lv2, .mouth-talk-lv3,
+  .glow-pulse, .bandana-tails, .ssj-aura, .bandana-tails-lvl3, .lightning-sparks,
+  .cyber-drones, .cylon-scanner, .divine-halo-bg, .divine-halo-fg, .energy-wings,
+  .cosmic-core, .third-eye, .sacred-geometry, .omega-core, .eclipse-corona,
+  .event-horizon, .event-horizon-inner, .omega-particles,
+  .timer .colon { animation: none !important; }
+}
+</style>
 </head>
 <body>
 
   <div class="toast" id="toast"></div>
+  <div class="scrim" id="scrim"></div>
 
-  <div class="w-full max-w-4xl mx-auto px-4 py-8">
+  <div class="app">
 
-    <!-- title top left -->
-    <div class="mb-6 flex items-center justify-between">
-      <div>
-        <h1 class="text-xl font-bold text-[#00f5ff] tracking-widest text-glow-cyan inline">POMODORO</h1>
-        <span class="text-[#ff00aa] text-xs tracking-[4px] text-glow-pink ml-2">RPG</span>
+    <!-- ===== TOP BAR ===== -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn drawer-btn" id="projDrawerBtn" title="Projets" aria-label="Ouvrir les projets">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+        </button>
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <span class="brand-name">Pomodoro<b>RPG</b></span>
+          <span class="pill">DUSK</span>
+        </div>
       </div>
-      <button class="theme-toggle" id="themeToggle" title="Changer le thème">&#9790;</button>
+      <div class="topbar-right">
+        <button class="icon-btn" id="themeToggle" title="Changer le thème" aria-label="Changer le thème"></button>
+        <button class="icon-btn drawer-btn" id="rulesDrawerBtn" title="Infos & règles" aria-label="Ouvrir les infos">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ===== BODY ===== -->
+    <div class="body">
+
+      <!-- PROJECTS dock -->
+      <aside class="dock left" id="projDock">
+        <div class="dock-top">
+          <span class="dock-name">PROJETS</span>
+          <button class="dock-toggle" id="projToggle" title="Déplier / replier" aria-label="Déplier les projets">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+          <button class="dock-close" id="projClose" aria-label="Fermer">&times;</button>
+        </div>
+        <div class="dock-scroll" id="projList"></div>
+        <button class="dock-add" id="addProj"><span class="plus">+</span><span class="lbl">Nouveau projet</span></button>
+      </aside>
+
+      <!-- HERO card -->
+      <main class="card">
+        <div class="stage" id="stage">
+          <div class="lv-badge" id="lvBadge">
+            <svg class="star" viewBox="0 0 24 24" fill="#2a1605"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+            <span class="n">1</span>
+          </div>
+          <div class="slime-wrap"><svg id="slime" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"></svg></div>
+        </div>
+
+        <div class="lvline" id="lvName">Niveau <b>1</b> · Slime</div>
+
+        <div class="xpwrap">
+          <div class="xprow"><span>XP</span><span><span class="cur" id="xpCur">0</span> / <span id="xpMax">100</span></span></div>
+          <div class="track"><div class="fill" id="xpFill"></div></div>
+        </div>
+
+        <div class="timer" id="timer">25<span class="colon">:</span>00</div>
+        <div class="phase live" id="phase"><span class="dot"></span><span id="phaseTxt">TRAVAIL</span></div>
+
+        <div class="controls">
+          <button class="btn primary" id="startBtn">START</button>
+          <button class="btn ghost" id="resetBtn">RESET</button>
+        </div>
+      </main>
+
+      <!-- INFOS / RULES dock -->
+      <aside class="dock right" id="rulesDock">
+        <div class="dock-top">
+          <span class="dock-name">INFOS</span>
+          <button class="dock-toggle" id="rulesToggle" title="Déplier / replier" aria-label="Déplier les infos">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+          <button class="dock-close" id="rulesClose" aria-label="Fermer">&times;</button>
+        </div>
+        <div class="dock-scroll">
+
+          <div class="rail-icons">
+            <button class="rail-ico" data-show="stats" title="Statistiques">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="13" y="7" width="3" height="10"/></svg>
+            </button>
+            <button class="rail-ico" data-show="rules" title="Règles">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+            </button>
+          </div>
+
+          <div class="panel-full">
+            <div class="panel-stats">
+              <div class="stat-grid">
+                <div class="stat-card"><div class="v" id="statTime">0m</div><div class="k">Temps focus</div></div>
+                <div class="stat-card"><div class="v" id="statSessions">0</div><div class="k">Séances</div></div>
+                <div class="stat-card"><div class="v" id="statLevel">1</div><div class="k">Niveau</div></div>
+                <div class="stat-card"><div class="v" id="statXP">0/100</div><div class="k">XP</div></div>
+              </div>
+            </div>
+            <div class="panel-rules">
+              <div class="rules-sec">
+                <h4>XP &amp; NIVEAUX</h4>
+                <div class="rule"><span class="k">Gagner de l'XP</span><span class="d">Une séance de travail terminée → <b>+50 XP</b></span></div>
+                <div class="rule"><span class="k">Monter de niveau</span><span class="d"><b>100 XP</b> requis par niveau (max niv. 10)</span></div>
+                <div class="rule"><span class="k">Rythme</span><span class="d"><b>25 min</b> de focus, <b>5 min</b> de pause</span></div>
+              </div>
+
+              <div class="rules-sec">
+                <h4>ÉVOLUTIONS</h4>
+                <div class="form-list">
+                  <div class="form-row"><span class="form-dot" style="background:#00f5ff"></span><b>Slime</b><span class="lv">Niv.1–2</span></div>
+                  <div class="form-row"><span class="form-dot" style="background:#ffea00"></span><b>Super Saiyan</b><span class="lv">Niv.3</span></div>
+                  <div class="form-row"><span class="form-dot" style="background:#ff00aa"></span><b>Cyber Slime</b><span class="lv">Niv.4</span></div>
+                  <div class="form-row"><span class="form-dot" style="background:#8800ff"></span><b>Slime Cosmique</b><span class="lv">Niv.5–9</span></div>
+                  <div class="form-row"><span class="form-dot" style="background:#ffea00"></span><b>Omega Slime</b><span class="lv">Niv.10</span></div>
+                </div>
+              </div>
+
+              <div class="rules-sec">
+                <h4>RACCOURCIS</h4>
+                <div class="rule"><span class="d"><b>Espace</b> — démarrer / pause</span></div>
+                <div class="rule"><span class="d"><b>R</b> — réinitialiser le timer</span></div>
+                <div class="rule"><span class="d">Chaque projet a son propre niveau &amp; son XP</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rail-mini"><div class="v" id="miniTime">0m</div><div class="k">TEMPS</div></div>
+        </div>
+      </aside>
+
     </div>
-
-    <div class="flex gap-4 items-start app-layout">
-
-    <!-- project gallery (sidebar left) -->
-    <div class="gallery-container w-full sm:w-56 flex-shrink-0">
-      <div class="gallery-header">
-        <span class="gallery-title">PROJETS</span>
-        <button class="gallery-add-btn" id="addProjectBtn">+</button>
-      </div>
-      <div class="gallery-scroll" id="projectGallery"></div>
-    </div>
-
-    <!-- main card -->
-    <div class="flex-1 rounded-2xl glow-cyan p-6 sm:p-8 main-card">
-
-      <!-- avatar -->
-      <div class="slime-container" id="avatarContainer">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="w-48 h-48 target-slime" id="slimeBody"></svg>
-        <div class="level-badge" id="levelBadge">1</div>
-      </div>
-
-      <!-- level & xp -->
-      <div class="text-center mb-4">
-        <div class="text-[#39ff14] text-sm font-bold tracking-widest text-glow-green">
-          NIVEAU <span id="levelDisplay">1</span>
-        </div>
-        <div class="text-gray-500 text-xs mt-1 tracking-wide">
-          XP <span id="xpDisplay">0</span> / <span id="xpMaxDisplay">100</span>
-        </div>
-        <div class="text-gray-600 text-[10px] mt-1 tracking-[2px]">
-          TEMPS <span id="projectTimeDisplay" class="text-[#ff00aa]">0m</span>
-        </div>
-      </div>
-
-      <!-- xp bar -->
-      <div class="xp-bar-track mb-7">
-        <div class="xp-bar-fill" id="xpBar" style="width: 0%;"></div>
-      </div>
-
-      <!-- timer -->
-      <div class="text-center mb-6">
-        <div class="timer-digits" id="timerDisplay">25:00</div>
-        <div class="text-gray-500 text-xs mt-2 tracking-[3px]" id="phaseLabel">TRAVAIL</div>
-      </div>
-
-      <!-- controls -->
-      <div class="flex gap-3 justify-center">
-        <button class="btn-cyber" id="startPauseBtn">START</button>
-        <button class="btn-cyber reset" id="resetBtn">RESET</button>
-      </div>
-
-      <!-- footer stats -->
-      <div class="text-center mt-5">
-        <div class="text-gray-600 text-[10px] tracking-[2px]">
-          SÉANCES <span id="sessionCount" class="text-[#00f5ff]">0</span>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- rules panel (sidebar right) -->
-    <div class="rules-container w-full sm:w-56 flex-shrink-0">
-      <div class="rules-title">RÈGLES</div>
-
-      <div class="rules-scroll">
-
-        <div class="rules-section">
-          <div class="rules-section-title">XP</div>
-          <div class="rules-item">
-            <span class="rules-label">Gagner de l'XP</span>
-            <span class="rules-desc">Terminer une session de travail → <span class="text-[#00f5ff]">+50 XP</span></span>
-          </div>
-          <div class="rules-item">
-            <span class="rules-label">Passer au niveau suivant</span>
-            <span class="rules-desc"><span class="text-[#39ff14]">100 XP</span> requis par niveau</span>
-          </div>
-        </div>
-
-        <div class="rules-section">
-          <div class="rules-section-title">NIVEAUX 1–10</div>
-          <div class="rules-item">
-            <span class="rules-label">Niv. 1–2 - Slime de base</span>
-          </div>
-          <div class="rules-item">
-            <span class="rules-label">Niv. 3 - Super Saiyan</span>
-          </div>
-          <div class="rules-item">
-            <span class="rules-label">Niv. 4 - Cyber Slime</span>
-          </div>
-          <div class="rules-item">
-            <span class="rules-label">Niv. 5–9 - Cosmique</span>
-          </div>
-          <div class="rules-item">
-            <span class="rules-label">Niv. 10 - Omega</span>
-          </div>
-        </div>
-
-        <div class="rules-section">
-          <div class="rules-section-title">STATUT</div>
-          <div class="rules-item">
-            <span class="rules-label">Temps de travail</span>
-            <span class="rules-desc"><span class="text-[#ff00aa]">25 min</span> par session</span>
-          </div>
-          <div class="rules-item">
-            <span class="rules-label">Pause</span>
-            <span class="rules-desc"><span class="text-[#39ff14]">5 min</span> entre sessions</span>
-          </div>
-          <div class="rules-item">
-            <span class="rules-label">Projets</span>
-            <span class="rules-desc">Chaque projet a son propre niveau & XP</span>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
   </div>
 
-  <!-- dev panel -->
-  <div class="dev-panel" id="devPanel">
+  <!-- ===== DEV PANEL (touche $) ===== -->
+  <div class="dev" id="dev">
     <span class="dev-label">DEV</span>
-    <button class="dev-btn" id="devLevelUp">NIVEAU+</button>
-    <button class="dev-btn" id="devLevelDown">NIVEAU-</button>
-    <button class="dev-btn" id="devAddXP">+XP</button>
-    <span class="dev-label" style="margin-left:12px;">VITESSE</span>
+    <button class="dev-btn" id="devLvUp">NIV +</button>
+    <button class="dev-btn" id="devLvDown">NIV −</button>
+    <button class="dev-btn" id="devXP">+25 XP</button>
+    <span class="dev-sep"></span>
+    <span class="dev-label">VITESSE</span>
     <button class="dev-btn speed" data-speed="1">×1</button>
     <button class="dev-btn speed" data-speed="2">×2</button>
     <button class="dev-btn speed" data-speed="5">×5</button>
     <button class="dev-btn speed" data-speed="10">×10</button>
-    <span class="dev-hint">O pour fermer</span>
+    <span class="dev-sep"></span>
+    <span class="dev-hint">$ pour fermer</span>
   </div>
 
-  <script>
-    // ============================================================
-    //  CONFIG
-    // ============================================================
-    const WORK_MIN = 25;
-    const BREAK_MIN = 5;
-    const XP_PER_SESSION = 50;
-    const XP_PER_LEVEL = 100;
+<script>
+// ============================================================
+//  CONFIG
+// ============================================================
+const WORK_MIN = 25, BREAK_MIN = 5, XP_PER_SESSION = 50, XP_PER_LEVEL = 100, MAX_LEVEL = 10;
 
-    // ============================================================
-    //  EVOLUTION COLOURS (levels 1‑10)
-    // ============================================================
-    const EVOLUTION = {
-      1: { gelLight: '#00ffff', gelMid: '#0066ff', gelDark: '#000d33', accent: '#00ffff' },
-      2: { gelLight: '#00ffff', gelMid: '#0066ff', gelDark: '#000d33', accent: '#00ffff' },
-      3: { gelLight: '#ffea00', gelMid: '#ff8800', gelDark: '#993300', accent: '#ffea00' },
-      4: { gelLight: '#ff00ff', gelMid: '#6600cc', gelDark: '#0a001a', accent: '#ff00ff' },
-      5: { gelLight: '#ffffff', gelMid: '#8800ff', gelDark: '#05001a', accent: '#00ffff' },
-      6: { gelLight: '#ffffff', gelMid: '#8800ff', gelDark: '#05001a', accent: '#00ffff' },
-      7: { gelLight: '#ffffff', gelMid: '#8800ff', gelDark: '#05001a', accent: '#00ffff' },
-      8: { gelLight: '#ffffff', gelMid: '#8800ff', gelDark: '#05001a', accent: '#00ffff' },
-      9: { gelLight: '#ffffff', gelMid: '#8800ff', gelDark: '#05001a', accent: '#00ffff' },
-      10: { gelLight: '#ffffff', gelMid: '#ffea00', gelDark: '#05001a', accent: '#ffea00' },
-    };
+// ============================================================
+//  EVOLUTION COLOURS (levels 1-10)
+// ============================================================
+const EVOLUTION = {
+  1: { gelLight: '#00ffff', gelMid: '#0066ff', gelDark: '#000d33', accent: '#00ffff' },
+  2: { gelLight: '#00ffff', gelMid: '#0066ff', gelDark: '#000d33', accent: '#00ffff' },
+  3: { gelLight: '#ffea00', gelMid: '#ff8800', gelDark: '#993300', accent: '#ffea00' },
+  4: { gelLight: '#ff00ff', gelMid: '#6600cc', gelDark: '#0a001a', accent: '#ff00ff' },
+  5: { gelLight: '#ffffff', gelMid: '#8800ff', gelDark: '#05001a', accent: '#00ffff' },
+  6: { gelLight: '#ffffff', gelMid: '#8800ff', gelDark: '#05001a', accent: '#00ffff' },
+  7: { gelLight: '#ffffff', gelMid: '#8800ff', gelDark: '#05001a', accent: '#00ffff' },
+  8: { gelLight: '#ffffff', gelMid: '#8800ff', gelDark: '#05001a', accent: '#00ffff' },
+  9: { gelLight: '#ffffff', gelMid: '#8800ff', gelDark: '#05001a', accent: '#00ffff' },
+  10: { gelLight: '#ffffff', gelMid: '#ffea00', gelDark: '#05001a', accent: '#ffea00' },
+};
 
-    // ============================================================
-    //  SVG TEMPLATES (levels 1,2,3,4,5,10)
-    // ============================================================
-    const SVG_TEMPLATES = {
-      1: `
-        <defs>
-          <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <radialGradient id="gel-body" cx="40%" cy="30%" r="65%" fx="35%" fy="25%">
-            <stop offset="0%" stop-color="var(--gel-light, #00ffff)" />
-            <stop offset="60%" stop-color="var(--gel-mid, #0066ff)" />
-            <stop offset="100%" stop-color="var(--gel-dark, #000d33)" />
-          </radialGradient>
-          <linearGradient id="glass-glare" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8" />
-            <stop offset="50%" stop-color="#ffffff" stop-opacity="0.1" />
-            <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
-          </linearGradient>
-        </defs>
-        <ellipse cx="100" cy="140" rx="85" ry="25" fill="none" stroke="var(--gel-accent, #00ffff)" stroke-width="1.5" opacity="0.4" filter="url(#neon-glow)" stroke-dasharray="15 10"/>
-        <path d="M 100,25 C 120,60 175,90 175,135 A 75,65 0 0,1 25,135 C 25,90 80,60 100,25 Z"
-              fill="url(#gel-body)" stroke="var(--gel-accent, #00ffff)" stroke-width="1.5" filter="url(#neon-glow)" />
-        <circle cx="140" cy="110" r="10" fill="#ffffff" opacity="0.15" />
-        <circle cx="150" cy="125" r="4" fill="#ffffff" opacity="0.2" />
-        <circle cx="50" cy="120" r="6" fill="#ffffff" opacity="0.1" />
-        <path d="M 100,30 C 70,60 35,95 35,130 C 35,95 65,55 100,30 Z" fill="url(#glass-glare)" opacity="0.9" />
-        <ellipse cx="100" cy="38" rx="2" ry="6" fill="#ffffff" opacity="0.9" />
-        <g class="blink-eye" style="--blink-delay:0s">
-          <ellipse cx="65" cy="115" rx="12" ry="15" fill="#ffffff" />
-          <ellipse cx="65" cy="115" rx="5" ry="7" fill="#000d33" />
-          <circle cx="63" cy="111" r="3" fill="var(--gel-accent, #00ffff)" filter="url(#neon-glow)"/>
-        </g>
-        <g class="blink-eye" style="--blink-delay:2.5s">
-          <ellipse cx="135" cy="115" rx="12" ry="15" fill="#ffffff" />
-          <ellipse cx="135" cy="115" rx="5" ry="7" fill="#000d33" />
-          <circle cx="133" cy="111" r="3" fill="var(--gel-accent, #00ffff)" filter="url(#neon-glow)"/>
-        </g>
-        <path class="mouth-talk" d="M 85,145 Q 100,155 115,145" fill="none" stroke="var(--gel-accent, #00ffff)" stroke-width="4" stroke-linecap="round" filter="url(#neon-glow)"/>
-      `,
-      2: `
-        <defs>
-          <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <radialGradient id="gel-body" cx="40%" cy="30%" r="65%" fx="35%" fy="25%">
-            <stop offset="0%" stop-color="var(--gel-light, #00ffff)" />
-            <stop offset="60%" stop-color="var(--gel-mid, #0066ff)" />
-            <stop offset="100%" stop-color="var(--gel-dark, #000d33)" />
-          </radialGradient>
-          <linearGradient id="glass-glare" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8" />
-            <stop offset="50%" stop-color="#ffffff" stop-opacity="0.1" />
-            <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
-          </linearGradient>
-          <linearGradient id="bandana-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#ff0055" />
-            <stop offset="50%" stop-color="#ff3377" />
-            <stop offset="100%" stop-color="#cc0044" />
-          </linearGradient>
-        </defs>
-        <ellipse cx="100" cy="140" rx="85" ry="25" fill="none" stroke="var(--gel-accent, #00ffff)" stroke-width="1.5" opacity="0.4" filter="url(#neon-glow)" stroke-dasharray="15 10"/>
-        <path d="M 100,25 C 120,60 175,90 175,135 A 75,65 0 0,1 25,135 C 25,90 80,60 100,25 Z" fill="url(#gel-body)" stroke="var(--gel-accent, #00ffff)" stroke-width="1.5" filter="url(#neon-glow)" />
-        <circle cx="140" cy="110" r="10" fill="#ffffff" opacity="0.15" />
-        <circle cx="150" cy="125" r="4" fill="#ffffff" opacity="0.2" />
-        <circle cx="50" cy="120" r="6" fill="#ffffff" opacity="0.1" />
-        <path d="M 100,30 C 70,60 35,95 35,130 C 35,95 65,55 100,30 Z" fill="url(#glass-glare)" opacity="0.9" />
-        <ellipse cx="100" cy="38" rx="2" ry="6" fill="#ffffff" opacity="0.9" />
-        <g class="blink-eye" style="--blink-delay:0s">
-          <ellipse cx="65" cy="115" rx="12" ry="15" fill="#ffffff" />
-          <ellipse cx="65" cy="115" rx="5" ry="7" fill="#000d33" />
-          <circle cx="63" cy="111" r="3" fill="var(--gel-accent, #00ffff)" filter="url(#neon-glow)"/>
-        </g>
-        <g class="blink-eye" style="--blink-delay:2.5s">
-          <ellipse cx="135" cy="115" rx="12" ry="15" fill="#ffffff" />
-          <ellipse cx="135" cy="115" rx="5" ry="7" fill="#000d33" />
-          <circle cx="133" cy="111" r="3" fill="var(--gel-accent, #00ffff)" filter="url(#neon-glow)"/>
-        </g>
-        <path class="mouth-talk-lv2" d="M 88,145 Q 100,153 112,145" fill="none" stroke="var(--gel-accent, #00ffff)" stroke-width="4" stroke-linecap="round" filter="url(#neon-glow)"/>
-        <g class="bandana-tails">
-          <path d="M 160,95 Q 180,110 190,105 Q 175,100 155,100 Z" fill="#cc0044" stroke="#ff4d88" stroke-width="1.5" />
-          <path d="M 160,95 Q 185,100 195,85 Q 175,90 160,90 Z" fill="url(#bandana-grad)" stroke="#ff4d88" stroke-width="1.5" filter="url(#neon-glow)" />
-        </g>
-        <path d="M 35,100 Q 65,105 100,115 Q 135,105 165,100 L 160,80 Q 100,90 40,80 Z" fill="url(#bandana-grad)" stroke="#ff4d88" stroke-width="2" filter="url(#neon-glow)" />
-        <circle cx="160" cy="95" r="5" fill="#ff0055" stroke="#ff4d88" stroke-width="2" filter="url(#neon-glow)"/>
-      `,
-      3: `
-        <defs>
-          <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <radialGradient id="gel-body-lvl3" cx="40%" cy="30%" r="70%" fx="35%" fy="25%">
-            <stop offset="0%" stop-color="#ffffff" />
-            <stop offset="30%" stop-color="#ffea00" />
-            <stop offset="80%" stop-color="#ff8800" />
-            <stop offset="100%" stop-color="#993300" />
-          </radialGradient>
-          <linearGradient id="glass-glare" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
-            <stop offset="50%" stop-color="#ffffff" stop-opacity="0.2" />
-            <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
-          </linearGradient>
-          <linearGradient id="bandana-grad-lvl3" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#00ffff" />
-            <stop offset="50%" stop-color="#0088ff" />
-            <stop offset="100%" stop-color="#0033cc" />
-          </linearGradient>
-        </defs>
-        <path class="ssj-aura" d="M 100,-10 L 120,30 L 170,10 L 150,50 L 200,80 L 160,100 L 190,140 L 150,150 L 160,190 L 100,170 L 40,190 L 50,150 L 10,140 L 40,100 L 0,80 L 50,50 L 30,10 L 80,30 Z" fill="none" stroke="#ffea00" stroke-width="2" opacity="0.6" filter="url(#neon-glow)" />
-        <path d="M 100,10 Q 115,40 135,25 C 155,70 175,90 175,135 A 75,65 0 0,1 25,135 C 25,90 45,70 65,25 Q 85,40 100,10 Z" fill="url(#gel-body-lvl3)" stroke="#ffea00" stroke-width="2" filter="url(#neon-glow)" />
-        <circle cx="140" cy="110" r="10" fill="#ffffff" opacity="0.3" />
-        <circle cx="150" cy="125" r="4" fill="#ffffff" opacity="0.4" />
-        <circle cx="50" cy="120" r="6" fill="#ffffff" opacity="0.2" />
-        <path d="M 65,30 Q 40,80 35,130 Q 55,80 75,45 Z" fill="url(#glass-glare)" opacity="0.8" />
-        <ellipse cx="100" cy="20" rx="3" ry="8" fill="#ffffff" opacity="0.9" />
-        <g class="blink-eye" style="--blink-delay:0s">
-          <ellipse cx="65" cy="115" rx="12" ry="15" fill="#ffffff" />
-          <ellipse cx="65" cy="115" rx="5" ry="7" fill="#993300" />
-          <circle cx="63" cy="111" r="3" fill="#ffea00" filter="url(#neon-glow)"/>
-        </g>
-        <g class="blink-eye" style="--blink-delay:2.5s">
-          <ellipse cx="135" cy="115" rx="12" ry="15" fill="#ffffff" />
-          <ellipse cx="135" cy="115" rx="5" ry="7" fill="#993300" />
-          <circle cx="133" cy="111" r="3" fill="#ffea00" filter="url(#neon-glow)"/>
-        </g>
-        <path class="mouth-talk-lv3" d="M 85,143 Q 100,150 115,140" fill="none" stroke="#ffea00" stroke-width="4" stroke-linecap="round" filter="url(#neon-glow)"/>
-        <g class="bandana-tails-lvl3">
-          <path d="M 160,95 Q 185,115 195,100 Q 175,100 155,100 Z" fill="#0033cc" stroke="#0088ff" stroke-width="1.5" />
-          <path d="M 160,95 Q 190,95 200,80 Q 175,90 160,90 Z" fill="url(#bandana-grad-lvl3)" stroke="#00ffff" stroke-width="1.5" filter="url(#neon-glow)" />
-        </g>
-        <path d="M 35,100 Q 65,107 100,117 Q 135,107 165,100 L 160,80 Q 100,92 40,80 Z" fill="url(#bandana-grad-lvl3)" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow)" />
-        <circle cx="160" cy="95" r="6" fill="#0088ff" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow)"/>
-        <g class="lightning-sparks" stroke="#ffffff" stroke-width="3" fill="none" filter="url(#neon-glow)">
-          <path d="M 20,60 L 40,70 L 30,90 L 50,100" />
-          <path d="M 180,110 L 155,115 L 170,135 L 140,145" />
-        </g>
-      `,
-      4: `
-        <defs>
-          <filter id="neon-glow-lvl4" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <radialGradient id="gel-body-lvl4" cx="40%" cy="30%" r="70%" fx="35%" fy="25%">
-            <stop offset="0%" stop-color="#ff00ff" />
-            <stop offset="50%" stop-color="#6600cc" />
-            <stop offset="100%" stop-color="#0a001a" />
-          </radialGradient>
-          <linearGradient id="visor-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#0088ff" />
-            <stop offset="50%" stop-color="#00ffff" />
-            <stop offset="100%" stop-color="#0088ff" />
-          </linearGradient>
-        </defs>
-        <g class="cyber-drones" filter="url(#neon-glow-lvl4)">
-          <circle cx="20" cy="100" r="6" fill="#00ffff" />
-          <circle cx="180" cy="100" r="6" fill="#00ffff" />
-        </g>
-        <path d="M 100,25 C 120,60 175,90 175,135 A 75,65 0 0,1 25,135 C 25,90 80,60 100,25 Z" fill="url(#gel-body-lvl4)" stroke="#ff00ff" stroke-width="1.5" filter="url(#neon-glow-lvl4)" />
-        <g class="glow-pulse">
-          <path d="M 40,105 Q 100,115 160,105 L 155,125 Q 100,135 45,125 Z" fill="#001133" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow-lvl4)" />
-          <path d="M 45,110 Q 100,118 155,110 L 152,120 Q 100,128 48,120 Z" fill="url(#visor-grad)" opacity="0.8" />
-        </g>
-        <ellipse class="cylon-scanner" cx="100" cy="116" rx="8" ry="3" fill="#ffffff" filter="url(#neon-glow-lvl4)" />
-        <g opacity="0.8" stroke="#00ffff" stroke-width="1.5" stroke-linecap="round">
-          <path d="M 85,145 L 115,145" />
-          <path d="M 90,142 L 90,148" />
-          <path d="M 100,142 L 100,148" />
-          <path d="M 110,142 L 110,148" />
-        </g>
-      `,
-      5: `
-        <defs>
-          <filter id="cosmic-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <radialGradient id="nebula-body" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
-            <stop offset="0%" stop-color="#ffffff" />
-            <stop offset="30%" stop-color="#00ffff" />
-            <stop offset="70%" stop-color="#8800ff" />
-            <stop offset="100%" stop-color="#05001a" />
-          </radialGradient>
-          <linearGradient id="wing-grad" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stop-color="#00ffff" stop-opacity="0.1" />
-            <stop offset="50%" stop-color="#8800ff" stop-opacity="0.5" />
-            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.9" />
-          </linearGradient>
-        </defs>
-        <g class="divine-halo-bg" filter="url(#cosmic-glow)">
-          <circle cx="100" cy="110" r="90" fill="none" stroke="#8800ff" stroke-width="1.5" stroke-dasharray="10 30 50 15 5 40" opacity="0.6"/>
-          <circle cx="100" cy="110" r="75" fill="none" stroke="#00ffff" stroke-width="2" stroke-dasharray="40 20 10 30" opacity="0.4"/>
-        </g>
-        <g class="energy-wings" filter="url(#cosmic-glow)">
-          <path d="M 50,100 C 10,70 -10,10 20,10 C 20,40 40,60 70,80 Z" fill="url(#wing-grad)" />
-          <path d="M 150,100 C 190,70 210,10 180,10 C 180,40 160,60 130,80 Z" fill="url(#wing-grad)" />
-        </g>
-        <path d="M 100,25 C 120,60 175,90 175,135 A 75,65 0 0,1 25,135 C 25,90 80,60 100,25 Z" fill="url(#nebula-body)" stroke="#ffffff" stroke-width="1" filter="url(#cosmic-glow)" />
-        <g stroke="#ffffff" stroke-width="0.5" fill="#ffffff" opacity="0.6">
-          <circle cx="60" cy="120" r="1.5" />
-          <circle cx="80" cy="135" r="2" />
-          <circle cx="130" cy="115" r="1.5" />
-          <line x1="60" y1="120" x2="80" y2="135" />
-          <line x1="80" y1="135" x2="100" y2="130" stroke-dasharray="2 2" />
-          <line x1="130" y1="115" x2="100" y2="130" />
-          <circle cx="150" cy="125" r="1" />
-          <circle cx="140" cy="90" r="1.5" />
-          <circle cx="50" cy="95" r="1" />
-        </g>
-        <circle class="cosmic-core glow-pulse" cx="100" cy="130" r="8" fill="#ffffff" filter="url(#cosmic-glow)" />
-        <polygon class="third-eye glow-pulse" points="100,65 104,75 114,79 104,83 100,93 96,83 86,79 96,75" fill="#ffffff" filter="url(#cosmic-glow)"/>
-        <g class="blink-eye" style="--blink-delay:0s">
-          <path d="M 55,110 Q 65,105 75,110" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" filter="url(#cosmic-glow)" />
-        </g>
-        <g class="blink-eye" style="--blink-delay:2.5s">
-          <path d="M 125,110 Q 135,105 145,110" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" filter="url(#cosmic-glow)" />
-        </g>
-        <g class="divine-halo-fg" filter="url(#cosmic-glow)">
-          <circle cx="100" cy="110" r="105" fill="none" stroke="#ffffff" stroke-width="1" stroke-dasharray="5 15 50 20" opacity="0.8"/>
-        </g>
-      `,
-      10: `
-        <defs>
-          <filter id="omega-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="8" result="blur1"/>
-            <feGaussianBlur stdDeviation="3" result="blur2"/>
-            <feMerge>
-              <feMergeNode in="blur1"/>
-              <feMergeNode in="blur2"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <radialGradient id="void-body" cx="50%" cy="50%" r="70%">
-            <stop offset="0%" stop-color="#000000" />
-            <stop offset="60%" stop-color="#05001a" />
-            <stop offset="100%" stop-color="#ffea00" />
-          </radialGradient>
-          <linearGradient id="prismatic-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#ffffff" />
-            <stop offset="50%" stop-color="#ffea00" />
-            <stop offset="100%" stop-color="#ff00aa" />
-          </linearGradient>
-        </defs>
-        <g class="eclipse-corona glow-pulse" filter="url(#omega-glow)">
-          <circle cx="100" cy="110" r="85" fill="none" stroke="url(#prismatic-gold)" stroke-width="2" stroke-dasharray="2 12" opacity="0.8" />
-          <circle cx="100" cy="110" r="95" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-dasharray="20 40" opacity="0.5" />
-        </g>
-        <g class="sacred-geometry" filter="url(#omega-glow)">
-          <polygon points="100,40 160,145 40,145" fill="none" stroke="url(#prismatic-gold)" stroke-width="1.5" opacity="0.4" />
-          <polygon points="100,180 40,75 160,75" fill="none" stroke="url(#prismatic-gold)" stroke-width="1.5" opacity="0.4" />
-        </g>
-        <path class="omega-body" d="M 100,25 C 120,60 175,90 175,135 A 75,65 0 0,1 25,135 C 25,90 80,60 100,25 Z" fill="url(#void-body)" stroke="#ffffff" stroke-width="2" filter="url(#omega-glow)" />
-        <ellipse class="event-horizon" cx="100" cy="120" rx="90" ry="15" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.9" filter="url(#omega-glow)" />
-        <ellipse class="event-horizon-inner" cx="100" cy="120" rx="85" ry="10" fill="none" stroke="#ffea00" stroke-width="1" stroke-dasharray="10 5" opacity="0.7" />
-        <g class="omega-core glow-pulse" filter="url(#omega-glow)">
-          <polygon points="100,85 115,115 100,145 85,115" fill="#ffffff" />
-          <polygon points="100,95 108,115 100,135 92,115" fill="#000000" />
-          <circle cx="100" cy="115" r="3" fill="#ffea00" />
-        </g>
-        <g class="omega-particles" fill="#ffffff" filter="url(#omega-glow)">
-          <circle cx="100" cy="30" r="2" />
-          <circle cx="150" cy="60" r="1.5" />
-          <circle cx="50" cy="60" r="1.5" />
-          <circle cx="170" cy="110" r="2" />
-          <circle cx="30" cy="110" r="2" />
-          <circle cx="150" cy="160" r="1.5" />
-          <circle cx="50" cy="160" r="1.5" />
-          <circle cx="100" cy="190" r="2" />
-        </g>
-      `
-    };
+// ============================================================
+//  SVG TEMPLATES (levels 1,2,3,4,5,10)
+// ============================================================
+const SVG_TEMPLATES = {
+  1: `
+    <defs>
+      <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <radialGradient id="gel-body" cx="40%" cy="30%" r="65%" fx="35%" fy="25%">
+        <stop offset="0%" stop-color="var(--gel-light, #00ffff)" />
+        <stop offset="60%" stop-color="var(--gel-mid, #0066ff)" />
+        <stop offset="100%" stop-color="var(--gel-dark, #000d33)" />
+      </radialGradient>
+      <linearGradient id="glass-glare" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8" />
+        <stop offset="50%" stop-color="#ffffff" stop-opacity="0.1" />
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+    <ellipse cx="100" cy="140" rx="85" ry="25" fill="none" stroke="var(--gel-accent, #00ffff)" stroke-width="1.5" opacity="0.4" filter="url(#neon-glow)" stroke-dasharray="15 10"/>
+    <path d="M 100,25 C 120,60 175,90 175,135 A 75,65 0 0,1 25,135 C 25,90 80,60 100,25 Z"
+          fill="url(#gel-body)" stroke="var(--gel-accent, #00ffff)" stroke-width="1.5" filter="url(#neon-glow)" />
+    <circle cx="140" cy="110" r="10" fill="#ffffff" opacity="0.15" />
+    <circle cx="150" cy="125" r="4" fill="#ffffff" opacity="0.2" />
+    <circle cx="50" cy="120" r="6" fill="#ffffff" opacity="0.1" />
+    <path d="M 100,30 C 70,60 35,95 35,130 C 35,95 65,55 100,30 Z" fill="url(#glass-glare)" opacity="0.9" />
+    <ellipse cx="100" cy="38" rx="2" ry="6" fill="#ffffff" opacity="0.9" />
+    <g class="blink-eye" style="--blink-delay:0s">
+      <ellipse cx="65" cy="115" rx="12" ry="15" fill="#ffffff" />
+      <ellipse cx="65" cy="115" rx="5" ry="7" fill="#000d33" />
+      <circle cx="63" cy="111" r="3" fill="var(--gel-accent, #00ffff)" filter="url(#neon-glow)"/>
+    </g>
+    <g class="blink-eye" style="--blink-delay:2.5s">
+      <ellipse cx="135" cy="115" rx="12" ry="15" fill="#ffffff" />
+      <ellipse cx="135" cy="115" rx="5" ry="7" fill="#000d33" />
+      <circle cx="133" cy="111" r="3" fill="var(--gel-accent, #00ffff)" filter="url(#neon-glow)"/>
+    </g>
+    <path class="mouth-talk" d="M 85,145 Q 100,155 115,145" fill="none" stroke="var(--gel-accent, #00ffff)" stroke-width="4" stroke-linecap="round" filter="url(#neon-glow)"/>
+  `,
+  2: `
+    <defs>
+      <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <radialGradient id="gel-body" cx="40%" cy="30%" r="65%" fx="35%" fy="25%">
+        <stop offset="0%" stop-color="var(--gel-light, #00ffff)" />
+        <stop offset="60%" stop-color="var(--gel-mid, #0066ff)" />
+        <stop offset="100%" stop-color="var(--gel-dark, #000d33)" />
+      </radialGradient>
+      <linearGradient id="glass-glare" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8" />
+        <stop offset="50%" stop-color="#ffffff" stop-opacity="0.1" />
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="bandana-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#ff0055" />
+        <stop offset="50%" stop-color="#ff3377" />
+        <stop offset="100%" stop-color="#cc0044" />
+      </linearGradient>
+    </defs>
+    <ellipse cx="100" cy="140" rx="85" ry="25" fill="none" stroke="var(--gel-accent, #00ffff)" stroke-width="1.5" opacity="0.4" filter="url(#neon-glow)" stroke-dasharray="15 10"/>
+    <path d="M 100,25 C 120,60 175,90 175,135 A 75,65 0 0,1 25,135 C 25,90 80,60 100,25 Z" fill="url(#gel-body)" stroke="var(--gel-accent, #00ffff)" stroke-width="1.5" filter="url(#neon-glow)" />
+    <circle cx="140" cy="110" r="10" fill="#ffffff" opacity="0.15" />
+    <circle cx="150" cy="125" r="4" fill="#ffffff" opacity="0.2" />
+    <circle cx="50" cy="120" r="6" fill="#ffffff" opacity="0.1" />
+    <path d="M 100,30 C 70,60 35,95 35,130 C 35,95 65,55 100,30 Z" fill="url(#glass-glare)" opacity="0.9" />
+    <ellipse cx="100" cy="38" rx="2" ry="6" fill="#ffffff" opacity="0.9" />
+    <g class="blink-eye" style="--blink-delay:0s">
+      <ellipse cx="65" cy="115" rx="12" ry="15" fill="#ffffff" />
+      <ellipse cx="65" cy="115" rx="5" ry="7" fill="#000d33" />
+      <circle cx="63" cy="111" r="3" fill="var(--gel-accent, #00ffff)" filter="url(#neon-glow)"/>
+    </g>
+    <g class="blink-eye" style="--blink-delay:2.5s">
+      <ellipse cx="135" cy="115" rx="12" ry="15" fill="#ffffff" />
+      <ellipse cx="135" cy="115" rx="5" ry="7" fill="#000d33" />
+      <circle cx="133" cy="111" r="3" fill="var(--gel-accent, #00ffff)" filter="url(#neon-glow)"/>
+    </g>
+    <path class="mouth-talk-lv2" d="M 88,145 Q 100,153 112,145" fill="none" stroke="var(--gel-accent, #00ffff)" stroke-width="4" stroke-linecap="round" filter="url(#neon-glow)"/>
+    <g class="bandana-tails">
+      <path d="M 160,95 Q 180,110 190,105 Q 175,100 155,100 Z" fill="#cc0044" stroke="#ff4d88" stroke-width="1.5" />
+      <path d="M 160,95 Q 185,100 195,85 Q 175,90 160,90 Z" fill="url(#bandana-grad)" stroke="#ff4d88" stroke-width="1.5" filter="url(#neon-glow)" />
+    </g>
+    <path d="M 35,100 Q 65,105 100,115 Q 135,105 165,100 L 160,80 Q 100,90 40,80 Z" fill="url(#bandana-grad)" stroke="#ff4d88" stroke-width="2" filter="url(#neon-glow)" />
+    <circle cx="160" cy="95" r="5" fill="#ff0055" stroke="#ff4d88" stroke-width="2" filter="url(#neon-glow)"/>
+  `,
+  3: `
+    <defs>
+      <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <radialGradient id="gel-body-lvl3" cx="40%" cy="30%" r="70%" fx="35%" fy="25%">
+        <stop offset="0%" stop-color="#ffffff" />
+        <stop offset="30%" stop-color="#ffea00" />
+        <stop offset="80%" stop-color="#ff8800" />
+        <stop offset="100%" stop-color="#993300" />
+      </radialGradient>
+      <linearGradient id="glass-glare" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+        <stop offset="50%" stop-color="#ffffff" stop-opacity="0.2" />
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="bandana-grad-lvl3" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#00ffff" />
+        <stop offset="50%" stop-color="#0088ff" />
+        <stop offset="100%" stop-color="#0033cc" />
+      </linearGradient>
+    </defs>
+    <path class="ssj-aura" d="M 100,-10 L 120,30 L 170,10 L 150,50 L 200,80 L 160,100 L 190,140 L 150,150 L 160,190 L 100,170 L 40,190 L 50,150 L 10,140 L 40,100 L 0,80 L 50,50 L 30,10 L 80,30 Z" fill="none" stroke="#ffea00" stroke-width="2" opacity="0.6" filter="url(#neon-glow)" />
+    <path d="M 100,10 Q 115,40 135,25 C 155,70 175,90 175,135 A 75,65 0 0,1 25,135 C 25,90 45,70 65,25 Q 85,40 100,10 Z" fill="url(#gel-body-lvl3)" stroke="#ffea00" stroke-width="2" filter="url(#neon-glow)" />
+    <circle cx="140" cy="110" r="10" fill="#ffffff" opacity="0.3" />
+    <circle cx="150" cy="125" r="4" fill="#ffffff" opacity="0.4" />
+    <circle cx="50" cy="120" r="6" fill="#ffffff" opacity="0.2" />
+    <path d="M 65,30 Q 40,80 35,130 Q 55,80 75,45 Z" fill="url(#glass-glare)" opacity="0.8" />
+    <ellipse cx="100" cy="20" rx="3" ry="8" fill="#ffffff" opacity="0.9" />
+    <g class="blink-eye" style="--blink-delay:0s">
+      <ellipse cx="65" cy="115" rx="12" ry="15" fill="#ffffff" />
+      <ellipse cx="65" cy="115" rx="5" ry="7" fill="#993300" />
+      <circle cx="63" cy="111" r="3" fill="#ffea00" filter="url(#neon-glow)"/>
+    </g>
+    <g class="blink-eye" style="--blink-delay:2.5s">
+      <ellipse cx="135" cy="115" rx="12" ry="15" fill="#ffffff" />
+      <ellipse cx="135" cy="115" rx="5" ry="7" fill="#993300" />
+      <circle cx="133" cy="111" r="3" fill="#ffea00" filter="url(#neon-glow)"/>
+    </g>
+    <path class="mouth-talk-lv3" d="M 85,143 Q 100,150 115,140" fill="none" stroke="#ffea00" stroke-width="4" stroke-linecap="round" filter="url(#neon-glow)"/>
+    <g class="bandana-tails-lvl3">
+      <path d="M 160,95 Q 185,115 195,100 Q 175,100 155,100 Z" fill="#0033cc" stroke="#0088ff" stroke-width="1.5" />
+      <path d="M 160,95 Q 190,95 200,80 Q 175,90 160,90 Z" fill="url(#bandana-grad-lvl3)" stroke="#00ffff" stroke-width="1.5" filter="url(#neon-glow)" />
+    </g>
+    <path d="M 35,100 Q 65,107 100,117 Q 135,107 165,100 L 160,80 Q 100,92 40,80 Z" fill="url(#bandana-grad-lvl3)" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow)" />
+    <circle cx="160" cy="95" r="6" fill="#0088ff" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow)"/>
+    <g class="lightning-sparks" stroke="#ffffff" stroke-width="3" fill="none" filter="url(#neon-glow)">
+      <path d="M 20,60 L 40,70 L 30,90 L 50,100" />
+      <path d="M 180,110 L 155,115 L 170,135 L 140,145" />
+    </g>
+  `,
+  4: `
+    <defs>
+      <filter id="neon-glow-lvl4" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <radialGradient id="gel-body-lvl4" cx="40%" cy="30%" r="70%" fx="35%" fy="25%">
+        <stop offset="0%" stop-color="#ff00ff" />
+        <stop offset="50%" stop-color="#6600cc" />
+        <stop offset="100%" stop-color="#0a001a" />
+      </radialGradient>
+      <linearGradient id="visor-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#0088ff" />
+        <stop offset="50%" stop-color="#00ffff" />
+        <stop offset="100%" stop-color="#0088ff" />
+      </linearGradient>
+    </defs>
+    <g class="cyber-drones" filter="url(#neon-glow-lvl4)">
+      <circle cx="20" cy="100" r="6" fill="#00ffff" />
+      <circle cx="180" cy="100" r="6" fill="#00ffff" />
+    </g>
+    <path d="M 100,25 C 120,60 175,90 175,135 A 75,65 0 0,1 25,135 C 25,90 80,60 100,25 Z" fill="url(#gel-body-lvl4)" stroke="#ff00ff" stroke-width="1.5" filter="url(#neon-glow-lvl4)" />
+    <g class="glow-pulse">
+      <path d="M 40,105 Q 100,115 160,105 L 155,125 Q 100,135 45,125 Z" fill="#001133" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow-lvl4)" />
+      <path d="M 45,110 Q 100,118 155,110 L 152,120 Q 100,128 48,120 Z" fill="url(#visor-grad)" opacity="0.8" />
+    </g>
+    <ellipse class="cylon-scanner" cx="100" cy="116" rx="8" ry="3" fill="#ffffff" filter="url(#neon-glow-lvl4)" />
+    <g opacity="0.8" stroke="#00ffff" stroke-width="1.5" stroke-linecap="round">
+      <path d="M 85,145 L 115,145" />
+      <path d="M 90,142 L 90,148" />
+      <path d="M 100,142 L 100,148" />
+      <path d="M 110,142 L 110,148" />
+    </g>
+  `,
+  5: `
+    <defs>
+      <filter id="cosmic-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <radialGradient id="nebula-body" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
+        <stop offset="0%" stop-color="#ffffff" />
+        <stop offset="30%" stop-color="#00ffff" />
+        <stop offset="70%" stop-color="#8800ff" />
+        <stop offset="100%" stop-color="#05001a" />
+      </radialGradient>
+      <linearGradient id="wing-grad" x1="0%" y1="100%" x2="0%" y2="0%">
+        <stop offset="0%" stop-color="#00ffff" stop-opacity="0.1" />
+        <stop offset="50%" stop-color="#8800ff" stop-opacity="0.5" />
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.9" />
+      </linearGradient>
+    </defs>
+    <g class="divine-halo-bg" filter="url(#cosmic-glow)">
+      <circle cx="100" cy="110" r="90" fill="none" stroke="#8800ff" stroke-width="1.5" stroke-dasharray="10 30 50 15 5 40" opacity="0.6"/>
+      <circle cx="100" cy="110" r="75" fill="none" stroke="#00ffff" stroke-width="2" stroke-dasharray="40 20 10 30" opacity="0.4"/>
+    </g>
+    <g class="energy-wings" filter="url(#cosmic-glow)">
+      <path d="M 50,100 C 10,70 -10,10 20,10 C 20,40 40,60 70,80 Z" fill="url(#wing-grad)" />
+      <path d="M 150,100 C 190,70 210,10 180,10 C 180,40 160,60 130,80 Z" fill="url(#wing-grad)" />
+    </g>
+    <path d="M 100,25 C 120,60 175,90 175,135 A 75,65 0 0,1 25,135 C 25,90 80,60 100,25 Z" fill="url(#nebula-body)" stroke="#ffffff" stroke-width="1" filter="url(#cosmic-glow)" />
+    <g stroke="#ffffff" stroke-width="0.5" fill="#ffffff" opacity="0.6">
+      <circle cx="60" cy="120" r="1.5" />
+      <circle cx="80" cy="135" r="2" />
+      <circle cx="130" cy="115" r="1.5" />
+      <line x1="60" y1="120" x2="80" y2="135" />
+      <line x1="80" y1="135" x2="100" y2="130" stroke-dasharray="2 2" />
+      <line x1="130" y1="115" x2="100" y2="130" />
+      <circle cx="150" cy="125" r="1" />
+      <circle cx="140" cy="90" r="1.5" />
+      <circle cx="50" cy="95" r="1" />
+    </g>
+    <circle class="cosmic-core glow-pulse" cx="100" cy="130" r="8" fill="#ffffff" filter="url(#cosmic-glow)" />
+    <polygon class="third-eye glow-pulse" points="100,65 104,75 114,79 104,83 100,93 96,83 86,79 96,75" fill="#ffffff" filter="url(#cosmic-glow)"/>
+    <g class="blink-eye" style="--blink-delay:0s">
+      <path d="M 55,110 Q 65,105 75,110" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" filter="url(#cosmic-glow)" />
+    </g>
+    <g class="blink-eye" style="--blink-delay:2.5s">
+      <path d="M 125,110 Q 135,105 145,110" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" filter="url(#cosmic-glow)" />
+    </g>
+    <g class="divine-halo-fg" filter="url(#cosmic-glow)">
+      <circle cx="100" cy="110" r="105" fill="none" stroke="#ffffff" stroke-width="1" stroke-dasharray="5 15 50 20" opacity="0.8"/>
+    </g>
+  `,
+  10: `
+    <defs>
+      <filter id="omega-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="8" result="blur1"/>
+        <feGaussianBlur stdDeviation="3" result="blur2"/>
+        <feMerge>
+          <feMergeNode in="blur1"/>
+          <feMergeNode in="blur2"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <radialGradient id="void-body" cx="50%" cy="50%" r="70%">
+        <stop offset="0%" stop-color="#000000" />
+        <stop offset="60%" stop-color="#05001a" />
+        <stop offset="100%" stop-color="#ffea00" />
+      </radialGradient>
+      <linearGradient id="prismatic-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff" />
+        <stop offset="50%" stop-color="#ffea00" />
+        <stop offset="100%" stop-color="#ff00aa" />
+      </linearGradient>
+    </defs>
+    <g class="eclipse-corona glow-pulse" filter="url(#omega-glow)">
+      <circle cx="100" cy="110" r="85" fill="none" stroke="url(#prismatic-gold)" stroke-width="2" stroke-dasharray="2 12" opacity="0.8" />
+      <circle cx="100" cy="110" r="95" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-dasharray="20 40" opacity="0.5" />
+    </g>
+    <g class="sacred-geometry" filter="url(#omega-glow)">
+      <polygon points="100,40 160,145 40,145" fill="none" stroke="url(#prismatic-gold)" stroke-width="1.5" opacity="0.4" />
+      <polygon points="100,180 40,75 160,75" fill="none" stroke="url(#prismatic-gold)" stroke-width="1.5" opacity="0.4" />
+    </g>
+    <path class="omega-body" d="M 100,25 C 120,60 175,90 175,135 A 75,65 0 0,1 25,135 C 25,90 80,60 100,25 Z" fill="url(#void-body)" stroke="#ffffff" stroke-width="2" filter="url(#omega-glow)" />
+    <ellipse class="event-horizon" cx="100" cy="120" rx="90" ry="15" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.9" filter="url(#omega-glow)" />
+    <ellipse class="event-horizon-inner" cx="100" cy="120" rx="85" ry="10" fill="none" stroke="#ffea00" stroke-width="1" stroke-dasharray="10 5" opacity="0.7" />
+    <g class="omega-core glow-pulse" filter="url(#omega-glow)">
+      <polygon points="100,85 115,115 100,145 85,115" fill="#ffffff" />
+      <polygon points="100,95 108,115 100,135 92,115" fill="#000000" />
+      <circle cx="100" cy="115" r="3" fill="#ffea00" />
+    </g>
+    <g class="omega-particles" fill="#ffffff" filter="url(#omega-glow)">
+      <circle cx="100" cy="30" r="2" />
+      <circle cx="150" cy="60" r="1.5" />
+      <circle cx="50" cy="60" r="1.5" />
+      <circle cx="170" cy="110" r="2" />
+      <circle cx="30" cy="110" r="2" />
+      <circle cx="150" cy="160" r="1.5" />
+      <circle cx="50" cy="160" r="1.5" />
+      <circle cx="100" cy="190" r="2" />
+    </g>
+  `
+};
 
-    // ============================================================
-    //  DOM REFS
-    // ============================================================
-    const $ = id => document.getElementById(id);
-    const themeToggle = $('themeToggle');
-    const timerDisplay = $('timerDisplay');
-    const phaseLabel = $('phaseLabel');
-    const startPauseBtn = $('startPauseBtn');
-    const resetBtn = $('resetBtn');
-    const levelDisplay = $('levelDisplay');
-    const levelBadge = $('levelBadge');
-    const xpDisplay = $('xpDisplay');
-    const xpMaxDisplay = $('xpMaxDisplay');
-    const xpBar = $('xpBar');
-    const sessionCountEl = $('sessionCount');
-    const projectTimeDisplay = $('projectTimeDisplay');
-    const projectGallery = $('projectGallery');
-    const avatarContainer = $('avatarContainer');
-    const slimeBody = $('slimeBody');
-    const toastEl = $('toast');
-    const devPanel = $('devPanel');
+// ============================================================
+//  SLIME FORM HELPERS (current system)
+// ============================================================
+const SLIME_NAMES = {
+  base: 'Slime',
+  ssj: 'Super Saiyan',
+  cyber: 'Cyber Slime',
+  cosmic: 'Slime Cosmique',
+  omega: 'Omega Slime'
+};
 
-    // ============================================================
-    //  THEME
-    // ============================================================
-    function setTheme(light) {
-      document.documentElement.classList.toggle('light', light);
-      themeToggle.innerHTML = light ? '&#9789;' : '&#9790;';
-      try { localStorage.setItem('pomodoroRPG_theme', light ? 'light' : 'dark'); } catch(e) {}
-    }
-    function loadTheme() {
-      try {
-        const saved = localStorage.getItem('pomodoroRPG_theme');
-        if (saved === 'light') setTheme(true);
-      } catch(e) {}
-    }
-    themeToggle.addEventListener('click', () => {
-      setTheme(!document.documentElement.classList.contains('light'));
-    });
-    loadTheme();
+function formForLevel(level) {
+  if (level <= 2) return 'base';
+  if (level === 3) return 'ssj';
+  if (level === 4) return 'cyber';
+  if (level >= 5 && level <= 9) return 'cosmic';
+  if (level >= 10) return 'omega';
+  return 'base';
+}
 
-    // ============================================================
-    //  HELPERS
-    // ============================================================
-    function fmtTime(sec) {
-      const m = Math.floor(sec / 60);
-      const s = sec % 60;
-      return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    }
+function formAccent(level) {
+  const evo = EVOLUTION[Math.min(level, 10)] || EVOLUTION[1];
+  return evo.accent;
+}
 
-    let toastTimeout = null;
-    function showToast(msg) {
-      toastEl.textContent = msg;
-      toastEl.classList.add('show');
-      clearTimeout(toastTimeout);
-      toastTimeout = setTimeout(() => toastEl.classList.remove('show'), 2600);
-    }
+// ============================================================
+//  DOM REFS
+// ============================================================
+const $ = id => document.getElementById(id);
+const el = {
+  theme: $('themeToggle'),
+  scrim: $('scrim'),
+  projDock: $('projDock'), projToggle: $('projToggle'), projList: $('projList'),
+  addProj: $('addProj'), projDrawerBtn: $('projDrawerBtn'), projClose: $('projClose'),
+  rulesDock: $('rulesDock'), rulesToggle: $('rulesToggle'),
+  rulesDrawerBtn: $('rulesDrawerBtn'), rulesClose: $('rulesClose'),
+  stage: $('stage'), slime: $('slime'), lvBadge: $('lvBadge'),
+  lvName: $('lvName'), xpCur: $('xpCur'), xpMax: $('xpMax'), xpFill: $('xpFill'),
+  timer: $('timer'), phase: $('phase'), phaseTxt: $('phaseTxt'),
+  start: $('startBtn'), reset: $('resetBtn'),
+  statTime: $('statTime'), statSessions: $('statSessions'),
+  statLevel: $('statLevel'), statXP: $('statXP'), miniTime: $('miniTime'),
+  dev: $('dev'), devLvUp: $('devLvUp'), devLvDown: $('devLvDown'), devXP: $('devXP'),
+  toast: $('toast'),
+};
 
-    function fmtDuration(totalSeconds) {
-      const totalMins = Math.floor(totalSeconds / 60);
-      const h = Math.floor(totalMins / 60);
-      const m = totalMins % 60;
-      if (h > 0) return `${h}h ${m}m`;
-      return `${m}m`;
-    }
+// ============================================================
+//  HELPERS
+// ============================================================
+const fmtClock = (sec) => {
+  const m = Math.floor(sec / 60), s = sec % 60;
+  return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+};
+const fmtDur = (sec) => {
+  const mins = Math.floor(sec / 60), h = Math.floor(mins / 60), m = mins % 60;
+  return h > 0 ? `${h}h${String(m).padStart(2, '0')}` : `${m}m`;
+};
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'p' + Date.now() + Math.random().toString(36).slice(2));
 
-    function spawnParticles(x, y, color) {
-      const colors = ['#00f5ff','#ff00aa','#39ff14','#ffd700','#fff'];
-      for (let i = 0; i < 18; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const size = 4 + Math.random() * 8;
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
-        p.style.background = colors[Math.floor(Math.random() * colors.length)] || color;
-        p.style.left = x + 'px';
-        p.style.top = y + 'px';
-        const angle = Math.random() * 2 * Math.PI;
-        const dist = 60 + Math.random() * 120;
-        p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
-        p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
-        p.style.boxShadow = '0 0 6px currentColor';
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 1300);
-      }
-    }
+let toastT = null;
+function toast(emoji, msg) {
+  el.toast.innerHTML = `<span class="emoji">${emoji}</span><span>${msg}</span>`;
+  el.toast.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.toast.classList.remove('show'), 2600);
+}
 
-    // ============================================================
-    //  DATA LAYER
-    // ============================================================
-    let projects = [];
-    let activeProjectId = null;
-    let draggedId = null;
+function spawnParticles(x, y) {
+  const colors = ['#00f5ff','#ff00aa','#39ff14','#ffd700','#fff'];
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 4 + Math.random() * 8;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.left = x + 'px';
+    p.style.top = y + 'px';
+    const angle = Math.random() * 2 * Math.PI;
+    const dist = 60 + Math.random() * 120;
+    p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+    p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+    p.style.boxShadow = '0 0 6px currentColor';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1300);
+  }
+}
 
-    function saveProjects() {
-      try {
-        localStorage.setItem('pomodoroRPG_projects', JSON.stringify(projects));
-        localStorage.setItem('pomodoroRPG_active', activeProjectId);
-      } catch(e) {
-        // localStorage may be unavailable
-      }
-    }
+// ============================================================
+//  THEME
+// ============================================================
+function setTheme(mode) {
+  document.documentElement.setAttribute('data-mode', mode);
+  el.theme.innerHTML = mode === 'light'
+    ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'
+    : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+  try { localStorage.setItem('prpg_theme', mode); } catch (e) {}
+}
+(function initTheme() {
+  let saved = 'dark';
+  // migrate old theme key
+  try {
+    const oldTheme = localStorage.getItem('pomodoroRPG_theme');
+    if (oldTheme) { saved = oldTheme; try { localStorage.removeItem('pomodoroRPG_theme'); } catch (e) {} }
+    else { saved = localStorage.getItem('prpg_theme') || 'dark'; }
+  } catch (e) { saved = 'dark'; }
+  setTheme(saved);
+})();
+el.theme.addEventListener('click', () =>
+  setTheme(document.documentElement.getAttribute('data-mode') === 'light' ? 'dark' : 'light'));
 
-    function loadProjects() {
-      try {
-        const raw = localStorage.getItem('pomodoroRPG_projects');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            projects = parsed;
-            activeProjectId = localStorage.getItem('pomodoroRPG_active');
-            // validate activeProjectId still exists
-            if (!projects.find(p => p.id === activeProjectId)) {
-              activeProjectId = projects[0].id;
-            }
-            return;
-          }
-        }
-      } catch(e) {
-        // corrupted data, fall through to default
-      }
-      // default project
-      projects = [{ id: crypto.randomUUID(), name: 'Projet Principal', level: 1, xp: 0, totalTime: 0 }];
-      activeProjectId = projects[0].id;
-      saveProjects();
-    }
+// ============================================================
+//  DATA LAYER
+// ============================================================
+let projects = [], activeId = null, draggedId = null;
 
-    function getActiveProject() {
-      return projects.find(p => p.id === activeProjectId) || projects[0];
-    }
+function save() {
+  try {
+    localStorage.setItem('prpg_projects', JSON.stringify(projects));
+    localStorage.setItem('prpg_active', activeId);
+  } catch (e) {}
+}
+function ensureTimerFields(p) {
+  if (p.timerPhase === undefined) p.timerPhase = 'work';
+  if (p.timerLeft === undefined) p.timerLeft = WORK_MIN * 60;
+  if (p.timerRunning === undefined) p.timerRunning = false;
+  if (p.timerUpdatedAt === undefined) p.timerUpdatedAt = Date.now();
+  if (p.sessions === undefined) p.sessions = 0;
+  return p;
+}
 
-    // ============================================================
-    //  RENDER FUNCTIONS
-    // ============================================================
-
-    function renderSlime(level) {
-      // pick the right SVG template (levels 5-9 use template 5, 10+ use template 10)
-      let tpl = level;
-      if (level >= 5 && level <= 9) tpl = 5;
-      else if (level >= 10) tpl = 10;
-
-      const template = SVG_TEMPLATES[tpl] || SVG_TEMPLATES[1];
-      slimeBody.innerHTML = template;
-
-      // apply evolution colours
-      const capped = Math.min(level, 10);
-      const evo = EVOLUTION[capped] || EVOLUTION[1];
-      slimeBody.style.setProperty('--gel-light', evo.gelLight);
-      slimeBody.style.setProperty('--gel-mid', evo.gelMid);
-      slimeBody.style.setProperty('--gel-dark', evo.gelDark);
-      slimeBody.style.setProperty('--gel-accent', evo.accent);
-
-      // per‑level animation overrides
-      if (level === 3) {
-        slimeBody.style.animation = 'slimeFloatFast 2s ease-in-out infinite';
-      } else if (level === 4) {
-        slimeBody.style.animation = 'mechaHover 3s ease-in-out infinite';
-      } else if (level >= 5 && level <= 9) {
-        slimeBody.style.animation = 'cosmicHover 5s ease-in-out infinite';
-      } else if (level >= 10) {
-        slimeBody.style.animation = 'omegaHover 6s ease-in-out infinite';
-      } else {
-        slimeBody.style.animation = '';
-      }
-    }
-
-    function updateUI() {
-      const p = getActiveProject();
-      if (!p) return;
-
-      levelDisplay.textContent = p.level;
-      levelBadge.textContent = p.level;
-      xpDisplay.textContent = p.xp;
-      xpMaxDisplay.textContent = XP_PER_LEVEL;
-      xpBar.style.width = Math.min(100, (p.xp / XP_PER_LEVEL) * 100) + '%';
-      projectTimeDisplay.textContent = fmtDuration(p.totalTime);
-      sessionCountEl.textContent = timerState.sessionCount;
-    }
-
-    function renderGallery() {
-      projectGallery.innerHTML = '';
-      projects.forEach(project => {
-        const card = document.createElement('div');
-        card.className = 'gallery-item' + (project.id === activeProjectId ? ' active' : '');
-        card.dataset.id = project.id;
-        card.draggable = true;
-
-        const icon = document.createElement('div');
-        icon.className = 'gallery-item-icon';
-        const evo = EVOLUTION[Math.min(project.level, 10)] || EVOLUTION[1];
-        icon.style.background = evo.accent;
-
-        const info = document.createElement('div');
-        info.className = 'gallery-item-info';
-
-        const name = document.createElement('div');
-        name.className = 'gallery-item-name';
-        name.textContent = project.name;
-        name.dataset.projectId = project.id;
-        name.title = 'Double-clic pour renommer';
-        name.addEventListener('dblclick', e => {
-          e.stopPropagation();
-          startRename(project.id);
-        });
-
-        const meta = document.createElement('div');
-        meta.className = 'gallery-item-meta';
-        meta.innerHTML = `<span>Lv.${project.level}</span>`;
-
-        const timeRow = document.createElement('div');
-        timeRow.className = 'gallery-item-meta';
-        timeRow.style.color = 'rgba(255,0,170,0.5)';
-        timeRow.style.fontSize = '0.55rem';
-        timeRow.className += ' gallery-item-time';
-        timeRow.textContent = fmtDuration(project.totalTime);
-
-        info.appendChild(name);
-        info.appendChild(meta);
-        info.appendChild(timeRow);
-
-        const actions = document.createElement('div');
-        actions.className = 'gallery-item-actions';
-
-        const renameBtn = document.createElement('button');
-        renameBtn.className = 'gallery-item-action-btn rename';
-        renameBtn.innerHTML = '&#9998;';
-        renameBtn.title = 'Renommer';
-        renameBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          startRename(project.id);
-        });
-
-        const delBtn = document.createElement('button');
-        delBtn.className = 'gallery-item-action-btn delete';
-        delBtn.textContent = '×';
-        delBtn.title = 'Supprimer';
-        delBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          deleteProject(project.id);
-        });
-
-        actions.appendChild(renameBtn);
-        actions.appendChild(delBtn);
-
-        card.appendChild(icon);
-        card.appendChild(info);
-        card.appendChild(actions);
-        card.addEventListener('click', () => selectProject(project.id));
-
-        // drag & drop
-        card.addEventListener('dragstart', e => {
-          draggedId = project.id;
-          card.classList.add('dragging');
-          e.dataTransfer.effectAllowed = 'move';
-        });
-
-        card.addEventListener('dragend', () => {
-          card.classList.remove('dragging');
-          document.querySelectorAll('.gallery-item.drag-over').forEach(el => {
-            el.classList.remove('drag-over');
-          });
-          draggedId = null;
-        });
-
-        card.addEventListener('dragover', e => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'move';
-        });
-
-        card.addEventListener('dragenter', e => {
-          e.preventDefault();
-          if (card.dataset.id !== draggedId) {
-            card.classList.add('drag-over');
-          }
-        });
-
-        card.addEventListener('dragleave', e => {
-          if (!card.contains(e.relatedTarget)) {
-            card.classList.remove('drag-over');
-          }
-        });
-
-        card.addEventListener('drop', e => {
-          e.preventDefault();
-          card.classList.remove('drag-over');
-          if (draggedId && draggedId !== card.dataset.id) {
-            moveProjectBefore(draggedId, card.dataset.id);
-            saveProjects();
-            renderGallery();
-          }
-        });
-
-        projectGallery.appendChild(card);
-      });
-    }
-
-    function updateGalleryTimes() {
-      const items = projectGallery.querySelectorAll('.gallery-item');
-      for (const item of items) {
-        const id = item.dataset.id;
-        const project = projects.find(p => p.id === id);
-        if (!project) continue;
-        const timeEl = item.querySelector('.gallery-item-time');
-        if (timeEl) timeEl.textContent = fmtDuration(project.totalTime);
-      }
-    }
-
-    function startRename(projectId) {
-      const project = projects.find(p => p.id === projectId);
-      if (!project) return;
-
-      const cards = projectGallery.querySelectorAll('.gallery-item');
-      let targetCard = null;
-      let targetNameEl = null;
-      for (const card of cards) {
-        if (card.dataset.id === projectId) {
-          targetCard = card;
-          targetNameEl = card.querySelector('.gallery-item-name');
-          break;
-        }
-      }
-      if (!targetNameEl) return;
-
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.className = 'gallery-item-name-input';
-      input.value = project.name;
-      input.dataset.projectId = projectId;
-
-      targetNameEl.replaceWith(input);
-      input.focus();
-      input.select();
-
-      function finishRename(confirm) {
-        const val = confirm ? input.value.trim() : '';
-        if (val) {
-          renameProject(projectId, val);
-        }
-        // restore the name element
-        const newName = document.createElement('div');
-        newName.className = 'gallery-item-name';
-        newName.textContent = val || project.name;
-        newName.dataset.projectId = projectId;
-        newName.title = 'Double-clic pour renommer';
-        newName.addEventListener('dblclick', e => {
-          e.stopPropagation();
-          startRename(projectId);
-        });
-        input.replaceWith(newName);
-      }
-
-      input.addEventListener('blur', () => finishRename(true));
-      input.addEventListener('keydown', e => {
-        if (e.key === 'Enter') { e.preventDefault(); finishRename(true); }
-        if (e.key === 'Escape') { e.preventDefault(); finishRename(false); }
-      });
-    }
-
-    function renameProject(id, newName) {
-      const project = projects.find(p => p.id === id);
-      if (!project) return;
-      project.name = newName;
-      saveProjects();
-      renderGallery();
-    }
-
-    function triggerLevelUpAnim() {
-      avatarContainer.classList.remove('level-up-anim');
-      void avatarContainer.offsetWidth; // force reflow
-      avatarContainer.classList.add('level-up-anim');
-      setTimeout(() => avatarContainer.classList.remove('level-up-anim'), 1000);
-    }
-
-    // ============================================================
-    //  PROJECT LOGIC
-    // ============================================================
-
-    function moveProjectBefore(draggedId, targetId) {
-      const fromIdx = projects.findIndex(p => p.id === draggedId);
-      const toIdx = projects.findIndex(p => p.id === targetId);
-      if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return;
-      const [project] = projects.splice(fromIdx, 1);
-      const adjustedTo = fromIdx < toIdx ? toIdx - 1 : toIdx;
-      projects.splice(adjustedTo, 0, project);
-    }
-
-    function addProject(name) {
-      const project = {
-        id: crypto.randomUUID(),
-        name: name.trim() || 'Nouveau Projet',
-        level: 1,
-        xp: 0,
-        totalTime: 0,
-      };
-      projects.push(project);
-      saveProjects();
-      renderGallery();
-      selectProject(project.id);
-    }
-
-    function deleteProject(id) {
-      if (projects.length <= 1) {
-        showToast('⛔ Garde au moins un projet');
+function load() {
+  // try migrate from old format first
+  try {
+    const oldRaw = localStorage.getItem('pomodoroRPG_projects');
+    if (oldRaw) {
+      const p = JSON.parse(oldRaw);
+      if (Array.isArray(p) && p.length) {
+        projects = p.map(ensureTimerFields);
+        activeId = localStorage.getItem('pomodoroRPG_active');
+        if (!projects.find((x) => x.id === activeId)) activeId = projects[0].id;
+        save();
+        try { localStorage.removeItem('pomodoroRPG_projects'); localStorage.removeItem('pomodoroRPG_active'); } catch (e) {}
+        fastForwardAllProjects();
         return;
       }
-      projects = projects.filter(p => p.id !== id);
-      saveProjects();
-      if (activeProjectId === id) {
-        selectProject(projects[0].id);
-      } else {
-        renderGallery();
-      }
     }
-
-    function selectProject(id) {
-      if (!projects.find(p => p.id === id)) return;
-      activeProjectId = id;
-
-      // stop timer if running
-      if (timerState.running) {
-        timerState.running = false;
-        clearInterval(timerInterval);
-        timerInterval = null;
-        startPauseBtn.textContent = 'START';
-      }
-
-      // reset timer state
-      timerState.phase = 'work';
-      timerState.timeLeft = WORK_MIN * 60;
-      timerState.sessionCount = 0;
-      timerDisplay.textContent = fmtTime(timerState.timeLeft);
-      phaseLabel.textContent = 'TRAVAIL';
-
-      const project = getActiveProject();
-      renderSlime(project.level);
-      updateUI();
-      renderGallery();
-      saveProjects();
-    }
-
-    // ============================================================
-    //  XP & LEVEL
-    // ============================================================
-
-    function addXP(projectId, amount) {
-      const project = projects.find(p => p.id === projectId);
-      if (!project) return;
-
-      project.xp += amount;
-      let leveledUp = false;
-
-      while (project.xp >= XP_PER_LEVEL) {
-        project.xp -= XP_PER_LEVEL;
-        project.level++;
-        leveledUp = true;
-      }
-
-      if (leveledUp) {
-        triggerLevelUpAnim();
-        const rect = avatarContainer.getBoundingClientRect();
-        spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, '#ffd700');
-        showToast(`⬆ NIVEAU ${project.level} !`);
-        renderSlime(project.level);
-      }
-
-      updateUI();
-      saveProjects();
-    }
-
-    // ============================================================
-    //  TIMER LOGIC
-    // ============================================================
-
-    let timerState = {
-      phase: 'work',
-      running: false,
-      timeLeft: WORK_MIN * 60,
-      sessionCount: 0,
-    };
-    let timerInterval = null;
-    let speedMultiplier = 1;
-
-    let saveDebounce = null;
-
-    function tick() {
-      if (!timerState.running) return;
-
-      timerState.timeLeft -= speedMultiplier;
-      if (timerState.timeLeft < 0) timerState.timeLeft = 0;
-      timerDisplay.textContent = fmtTime(timerState.timeLeft);
-
-      // accumulate real-time seconds on current project during work
-      if (timerState.phase === 'work') {
-        const project = getActiveProject();
-        if (project) {
-          project.totalTime += speedMultiplier;
-        }
-      }
-
-      if (timerState.timeLeft <= 0) {
-        if (timerState.phase === 'work') {
-          // work session complete
-          timerState.sessionCount++;
-          const project = getActiveProject();
-          if (project) {
-            addXP(project.id, XP_PER_SESSION);
-          }
-          timerState.phase = 'break';
-          timerState.timeLeft = BREAK_MIN * 60;
-          phaseLabel.textContent = 'PAUSE';
-          timerDisplay.textContent = fmtTime(timerState.timeLeft);
-          showToast('☕ Pause !');
-        } else {
-          timerState.phase = 'work';
-          timerState.timeLeft = WORK_MIN * 60;
-          phaseLabel.textContent = 'TRAVAIL';
-          timerDisplay.textContent = fmtTime(timerState.timeLeft);
-          showToast('⚔ Au travail !');
-        }
-      }
-
-      // refresh UI every tick (real‑time time display)
-      updateUI();
-      updateGalleryTimes();
-
-      // debounced save (every 5s at most)
-      if (!saveDebounce) {
-        saveDebounce = setTimeout(() => {
-          saveProjects();
-          saveDebounce = null;
-        }, 5000);
-      }
-    }
-
-    function startPause() {
-      if (timerState.running) {
-        timerState.running = false;
-        clearInterval(timerInterval);
-        timerInterval = null;
-        startPauseBtn.textContent = 'START';
-      } else {
-        timerState.running = true;
-        timerInterval = setInterval(tick, 1000);
-        startPauseBtn.textContent = 'PAUSE';
-      }
-    }
-
-    function resetTimer() {
-      timerState.running = false;
-      clearInterval(timerInterval);
-      timerInterval = null;
-      startPauseBtn.textContent = 'START';
-      timerState.phase = 'work';
-      timerState.timeLeft = WORK_MIN * 60;
-      timerDisplay.textContent = fmtTime(timerState.timeLeft);
-      phaseLabel.textContent = 'TRAVAIL';
-    }
-
-    // ============================================================
-    //  DEV MODE
-    // ============================================================
-
-    let devMode = false;
-
-    function toggleDevMode() {
-      devMode = !devMode;
-      devPanel.classList.toggle('show', devMode);
-    }
-
-    function setSpeed(speed) {
-      speedMultiplier = speed;
-      document.querySelectorAll('.dev-btn.speed').forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.dataset.speed) === speed);
-      });
-    }
-
-    function devLevelUp() {
-      const p = getActiveProject();
-      if (p) addXP(p.id, XP_PER_LEVEL);
-    }
-
-    function devLevelDown() {
-      const p = getActiveProject();
-      if (!p || p.level <= 1) {
-        showToast('⛔ Déjà au niveau minimum');
+  } catch (e) {}
+  try {
+    const raw = localStorage.getItem('prpg_projects');
+    if (raw) {
+      const p = JSON.parse(raw);
+      if (Array.isArray(p) && p.length) {
+        projects = p.map(ensureTimerFields);
+        activeId = localStorage.getItem('prpg_active');
+        if (!projects.find((x) => x.id === activeId)) activeId = projects[0].id;
+        fastForwardAllProjects();
         return;
       }
-      p.level--;
-      p.xp = 0;
-      renderSlime(p.level);
-      updateUI();
-      saveProjects();
-      renderGallery();
-      showToast(`⬇ Niveau ${p.level}`);
     }
+  } catch (e) {}
+  const now = Date.now();
+  projects = [ensureTimerFields({ id: uid(), name: 'Projet Principal', level: 1, xp: 0, totalTime: 0, sessions: 0, timerUpdatedAt: now })];
+  activeId = projects[0].id;
+  save();
+}
+const active = () => projects.find((p) => p.id === activeId) || projects[0];
 
-    function devAddXP() {
-      const p = getActiveProject();
-      if (p) addXP(p.id, 25);
+// ============================================================
+//  SLIME RENDER
+// ============================================================
+function renderSlime(level) {
+  let tpl = level;
+  if (level >= 5 && level <= 9) tpl = 5;
+  else if (level >= 10) tpl = 10;
+  const template = SVG_TEMPLATES[tpl] || SVG_TEMPLATES[1];
+  el.slime.innerHTML = template;
+
+  const capped = Math.min(level, 10);
+  const evo = EVOLUTION[capped] || EVOLUTION[1];
+  el.slime.style.setProperty('--gel-light', evo.gelLight);
+  el.slime.style.setProperty('--gel-mid', evo.gelMid);
+  el.slime.style.setProperty('--gel-dark', evo.gelDark);
+  el.slime.style.setProperty('--gel-accent', evo.accent);
+
+  if (level === 3) {
+    el.slime.style.animation = 'slimeFloatFast 2s ease-in-out infinite';
+  } else if (level === 4) {
+    el.slime.style.animation = 'mechaHover 3s ease-in-out infinite';
+  } else if (level >= 5 && level <= 9) {
+    el.slime.style.animation = 'cosmicHover 5s ease-in-out infinite';
+  } else if (level >= 10) {
+    el.slime.style.animation = 'omegaHover 6s ease-in-out infinite';
+  } else {
+    el.slime.style.animation = '';
+  }
+
+  el.lvName.innerHTML = `Niveau <b>${level}</b> · ${SLIME_NAMES[formForLevel(level)]}`;
+}
+
+// ============================================================
+//  UI REFRESH
+// ============================================================
+function renderHero() {
+  const p = active();
+  el.lvBadge.querySelector('.n').textContent = p.level;
+  el.xpCur.textContent = p.xp;
+  el.xpMax.textContent = XP_PER_LEVEL;
+  el.xpFill.style.width = Math.min(100, (p.xp / XP_PER_LEVEL) * 100) + '%';
+  el.statTime.textContent = fmtDur(p.totalTime);
+  el.statSessions.textContent = p.sessions || 0;
+  el.statLevel.textContent = p.level;
+  el.statXP.textContent = p.xp + '/' + XP_PER_LEVEL;
+  el.miniTime.textContent = fmtDur(p.totalTime);
+}
+
+function projRow(p) {
+  const row = document.createElement('div');
+  row.className = 'proj' + (p.id === activeId ? ' active' : '');
+  row.dataset.id = p.id;
+  row.draggable = true;
+
+  const ico = document.createElement('div');
+  ico.className = 'proj-ico';
+  ico.style.background = `linear-gradient(135deg, #ffd089, ${formAccent(p.level)})`;
+  ico.textContent = (p.name.trim()[0] || '?').toUpperCase();
+  const lv = document.createElement('span');
+  lv.className = 'lv'; lv.textContent = p.level;
+  ico.appendChild(lv);
+
+  const info = document.createElement('div');
+  info.className = 'proj-info';
+  const name = document.createElement('div');
+  name.className = 'proj-name'; name.textContent = p.name; name.title = 'Double-clic pour renommer';
+  name.addEventListener('dblclick', (e) => { e.stopPropagation(); startRename(p.id, row); });
+  const meta = document.createElement('div');
+  meta.className = 'proj-meta'; meta.textContent = `Niv.${p.level} · ${fmtDur(p.totalTime)}`;
+  info.appendChild(name); info.appendChild(meta);
+
+  const actions = document.createElement('div');
+  actions.className = 'proj-actions';
+  const renameBtn = document.createElement('button');
+  renameBtn.className = 'pa-btn'; renameBtn.title = 'Renommer';
+  renameBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+  renameBtn.addEventListener('click', (e) => { e.stopPropagation(); startRename(p.id, row); });
+  const delBtn = document.createElement('button');
+  delBtn.className = 'pa-btn del'; delBtn.title = 'Supprimer';
+  delBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>';
+  delBtn.addEventListener('click', (e) => { e.stopPropagation(); removeProject(p.id); });
+  actions.appendChild(renameBtn); actions.appendChild(delBtn);
+
+  row.appendChild(ico); row.appendChild(info); row.appendChild(actions);
+  row.addEventListener('click', () => selectProject(p.id));
+
+  row.addEventListener('dragstart', (e) => { draggedId = p.id; row.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
+  row.addEventListener('dragend', () => { row.classList.remove('dragging'); document.querySelectorAll('.proj.drag-over').forEach((x) => x.classList.remove('drag-over')); draggedId = null; });
+  row.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+  row.addEventListener('dragenter', (e) => { e.preventDefault(); if (row.dataset.id !== draggedId) row.classList.add('drag-over'); });
+  row.addEventListener('dragleave', (e) => { if (!row.contains(e.relatedTarget)) row.classList.remove('drag-over'); });
+  row.addEventListener('drop', (e) => {
+    e.preventDefault(); row.classList.remove('drag-over');
+    if (draggedId && draggedId !== row.dataset.id) { moveBefore(draggedId, row.dataset.id); save(); renderProjects(); }
+  });
+  return row;
+}
+
+function renderProjects() {
+  el.projList.innerHTML = '';
+  projects.forEach((p) => el.projList.appendChild(projRow(p)));
+}
+
+function startRename(id, row) {
+  const p = projects.find((x) => x.id === id); if (!p) return;
+  const nameEl = row.querySelector('.proj-name'); if (!nameEl) return;
+  const input = document.createElement('input');
+  input.type = 'text'; input.className = 'proj-name-input'; input.value = p.name;
+  nameEl.replaceWith(input); input.focus(); input.select();
+  const finish = (ok) => {
+    const v = ok ? input.value.trim() : '';
+    if (v) { p.name = v; save(); }
+    renderProjects(); renderHero();
+  };
+  input.addEventListener('blur', () => finish(true));
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); finish(true); }
+    if (e.key === 'Escape') { e.preventDefault(); finish(false); }
+  });
+}
+
+function moveBefore(dragId, targetId) {
+  const from = projects.findIndex((p) => p.id === dragId), to = projects.findIndex((p) => p.id === targetId);
+  if (from === -1 || to === -1 || from === to) return;
+  const [item] = projects.splice(from, 1);
+  projects.splice(from < to ? to - 1 : to, 0, item);
+}
+
+function addProject() {
+  const now = Date.now();
+  const p = { id: uid(), name: 'Nouveau Projet', level: 1, xp: 0, totalTime: 0, sessions: 0, timerPhase: 'work', timerLeft: WORK_MIN * 60, timerRunning: false, timerUpdatedAt: now };
+  projects.push(p); save(); renderProjects();
+  selectProject(p.id);
+  const row = el.projList.querySelector(`.proj[data-id="${p.id}"]`);
+  if (row) startRename(p.id, row);
+}
+
+function removeProject(id) {
+  if (projects.length <= 1) { toast('🛑', 'Garde au moins un projet'); return; }
+  if (activeId === id) {
+    saveTimerToProject();
+    clearInterval(interval); interval = null;
+  }
+  projects = projects.filter((p) => p.id !== id);
+  save();
+  if (activeId === id) selectProject(projects[0].id);
+  else renderProjects();
+}
+
+function selectProject(id) {
+  if (!projects.find((p) => p.id === id)) return;
+  const prev = active();
+  if (prev) saveTimerToProject();
+  activeId = id;
+  const p = active();
+  loadTimerFromProject(p);
+  renderSlime(p.level);
+  renderProjects(); renderHero(); save();
+}
+
+// ============================================================
+//  XP & LEVELS
+// ============================================================
+function addXP(amount, silent) {
+  const p = active();
+  p.xp += amount;
+  let leveled = false;
+  while (p.xp >= XP_PER_LEVEL && p.level < MAX_LEVEL) { p.xp -= XP_PER_LEVEL; p.level++; leveled = true; }
+  if (p.level >= MAX_LEVEL) p.xp = Math.min(p.xp, XP_PER_LEVEL);
+  if (leveled && !silent) celebrateLevelUp(p.level);
+  renderHero(); renderProjects(); save();
+}
+
+function celebrateLevelUp(level) {
+  const prevForm = el.slime.dataset.form;
+  renderSlime(level);
+  el.stage.classList.remove('levelup'); void el.stage.offsetWidth; el.stage.classList.add('levelup');
+  el.lvBadge.classList.remove('bump'); void el.lvBadge.offsetWidth; el.lvBadge.classList.add('bump');
+  const r = el.stage.getBoundingClientRect();
+  spawnParticles(r.left + r.width / 2, r.top + r.height / 2);
+  const newForm = formForLevel(level);
+  if (prevForm && prevForm !== newForm)
+    toast('✨', `Évolution ! ${SLIME_NAMES[newForm]}`);
+  else
+    toast('⬆️', `Niveau ${level} atteint !`);
+  el.slime.dataset.form = newForm;
+  setTimeout(() => el.stage.classList.remove('levelup'), 950);
+}
+
+// ============================================================
+//  TIMER
+// ============================================================
+let timer = { phase: 'work', running: false, left: WORK_MIN * 60 };
+let interval = null, speed = 1, saveDebounce = null;
+
+// ── per‑project persistence ──
+
+function saveTimerToProject() {
+  const p = active();
+  if (!p) return;
+  p.timerPhase = timer.phase;
+  p.timerLeft = timer.left;
+  p.timerRunning = timer.running;
+  p.timerUpdatedAt = Date.now();
+  save();
+}
+
+function fastForwardProject(p) {
+  if (!p.timerRunning || !p.timerUpdatedAt) return;
+  const elapsed = Math.floor((Date.now() - p.timerUpdatedAt) / 1000) * speed;
+  if (elapsed <= 0) return;
+  let remaining = elapsed;
+  while (remaining > 0) {
+    const step = Math.min(remaining, p.timerLeft > 0 ? p.timerLeft : remaining);
+    if (p.timerPhase === 'work') p.totalTime += step;
+    p.timerLeft -= step;
+    remaining -= step;
+    if (p.timerLeft <= 0) {
+      if (p.timerPhase === 'work') {
+        p.sessions = (p.sessions || 0) + 1;
+        p.timerPhase = 'break';
+        p.timerLeft = BREAK_MIN * 60;
+      } else {
+        p.timerPhase = 'work';
+        p.timerLeft = WORK_MIN * 60;
+      }
     }
+  }
+  p.timerUpdatedAt = Date.now();
+}
 
-    // ============================================================
-    //  INIT
-    // ============================================================
+function loadTimerFromProject(p) {
+  fastForwardProject(p);
+  timer.phase = p.timerPhase || 'work';
+  timer.left = p.timerLeft !== undefined ? p.timerLeft : WORK_MIN * 60;
+  timer.running = p.timerRunning || false;
+  updateTimerDisplay();
+  setPhase(timer.phase);
+  // restart interval if the loaded project has a running timer
+  if (timer.running) {
+    if (!interval) {
+      interval = setInterval(tick, 1000);
+      el.timer.classList.add('running');
+      el.phase.classList.add('live');
+      el.start.textContent = 'PAUSE';
+    }
+  } else {
+    if (interval) {
+      clearInterval(interval); interval = null;
+      el.timer.classList.remove('running');
+      el.phase.classList.remove('live');
+      el.start.textContent = 'START';
+    }
+  }
+}
 
-    loadProjects();
-    const initial = getActiveProject();
-    renderSlime(initial.level);
-    timerState.timeLeft = WORK_MIN * 60;
-    timerDisplay.textContent = fmtTime(timerState.timeLeft);
-    phaseLabel.textContent = 'TRAVAIL';
-    updateUI();
-    renderGallery();
+// ── on page load, fast‑forward every running project ──
 
-    // event listeners
-    startPauseBtn.addEventListener('click', startPause);
-    resetBtn.addEventListener('click', resetTimer);
-    $('addProjectBtn').addEventListener('click', () => {
-      const name = prompt('Nom du projet :');
-      if (name && name.trim()) addProject(name.trim());
-    });
+function fastForwardAllProjects() {
+  projects.forEach((p) => {
+    if (p.timerRunning) { fastForwardProject(p); }
+  });
+  save();
+}
 
-    // keyboard shortcuts (skip when typing in an input)
-    document.addEventListener('keydown', e => {
-      const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (e.key === ' ' || e.key === 'Space') { e.preventDefault(); startPause(); }
-      if (e.key === 'r' || e.key === 'R') resetTimer();
-      if (e.key === '$') { e.preventDefault(); toggleDevMode(); }
-    });
+// ── live tick ──
 
-    // dev panel
-    $('devLevelUp').addEventListener('click', devLevelUp);
-    $('devLevelDown').addEventListener('click', devLevelDown);
-    $('devAddXP').addEventListener('click', devAddXP);
-    document.querySelectorAll('.dev-btn.speed').forEach(btn => {
-      btn.addEventListener('click', () => setSpeed(parseInt(btn.dataset.speed)));
-    });
-  </script>
+function updateTimerDisplay() { renderTimerDigits(); }
+function renderTimerDigits() {
+  const txt = fmtClock(timer.left);
+  el.timer.innerHTML = txt.replace(':', '<span class="colon">:</span>');
+}
+function setPhase(phase) {
+  timer.phase = phase;
+  el.phase.classList.toggle('break', phase === 'break');
+  el.phaseTxt.textContent = phase === 'break' ? 'PAUSE' : 'TRAVAIL';
+}
+
+function processTimerCycle() {
+  if (timer.left <= 0) {
+    if (timer.phase === 'work') {
+      const p = active();
+      if (p) { p.sessions = (p.sessions || 0) + 1; }
+      addXP(XP_PER_SESSION);
+      setPhase('break'); timer.left = BREAK_MIN * 60; renderTimerDigits();
+      toast('☕', 'Pause bien méritée !');
+    } else {
+      setPhase('work'); timer.left = WORK_MIN * 60; renderTimerDigits();
+      toast('⚔️', 'Au travail !');
+    }
+    return true;
+  }
+  return false;
+}
+
+function tick() {
+  if (!timer.running) return;
+  timer.left -= speed;
+  if (timer.left < 0) timer.left = 0;
+  renderTimerDigits();
+  if (timer.phase === 'work') {
+    const p = active(); if (p) p.totalTime += speed;
+  }
+  processTimerCycle();
+  renderHero();
+  if (!saveDebounce) saveDebounce = setTimeout(() => { saveTimerToProject(); saveDebounce = null; }, 4000);
+}
+
+function startTimer() {
+  timer.running = true; el.timer.classList.add('running'); el.phase.classList.add('live');
+  el.start.textContent = 'PAUSE';
+  saveTimerToProject();
+  if (!interval) interval = setInterval(tick, 1000);
+}
+function stopTimer() {
+  timer.running = false; el.timer.classList.remove('running'); el.phase.classList.remove('live');
+  el.start.textContent = 'START';
+  clearInterval(interval); interval = null;
+  saveTimerToProject();
+}
+function toggleTimer() { timer.running ? stopTimer() : startTimer(); }
+function resetTimer() {
+  stopTimer(); setPhase('work'); timer.left = WORK_MIN * 60; renderTimerDigits();
+  const p = active();
+  if (p) { p.timerPhase = 'work'; p.timerLeft = WORK_MIN * 60; p.timerRunning = false; save(); }
+}
+
+el.start.addEventListener('click', toggleTimer);
+el.reset.addEventListener('click', resetTimer);
+
+// ============================================================
+//  DOCKS
+// ============================================================
+el.projToggle.addEventListener('click', () => el.projDock.classList.toggle('expanded'));
+el.rulesToggle.addEventListener('click', () => el.rulesDock.classList.toggle('expanded'));
+
+function openDrawer(which) {
+  closeDrawers();
+  (which === 'proj' ? el.projDock : el.rulesDock).classList.add('open');
+  el.scrim.classList.add('show');
+}
+function closeDrawers() {
+  el.projDock.classList.remove('open'); el.rulesDock.classList.remove('open');
+  el.scrim.classList.remove('show');
+}
+el.projDrawerBtn.addEventListener('click', () => openDrawer('proj'));
+el.rulesDrawerBtn.addEventListener('click', () => openDrawer('rules'));
+el.projClose.addEventListener('click', closeDrawers);
+el.rulesClose.addEventListener('click', closeDrawers);
+el.scrim.addEventListener('click', closeDrawers);
+
+el.addProj.addEventListener('click', addProject);
+el.rulesDock.querySelectorAll('.rail-ico').forEach((b) => {
+  b.addEventListener('click', () => {
+    el.rulesDock.classList.add('expanded');
+    el.rulesDock.classList.remove('show-stats', 'show-rules');
+    el.rulesDock.classList.add('show-' + b.dataset.show);
+  });
+});
+
+// ============================================================
+//  DEV PANEL
+// ============================================================
+let devOpen = false;
+function toggleDev() { devOpen = !devOpen; el.dev.classList.toggle('show', devOpen); }
+el.devLvUp.addEventListener('click', () => { const p = active(); if (p.level < MAX_LEVEL) addXP(XP_PER_LEVEL); else toast('🛑', 'Niveau max'); });
+el.devLvDown.addEventListener('click', () => {
+  const p = active(); if (p.level <= 1) { toast('🛑', 'Niveau minimum'); return; }
+  p.level--; p.xp = 0; renderSlime(p.level); el.slime.dataset.form = formForLevel(p.level);
+  renderHero(); renderProjects(); save(); toast('⬇️', `Niveau ${p.level}`);
+});
+el.devXP.addEventListener('click', () => addXP(25));
+el.dev.querySelectorAll('.dev-btn.speed').forEach((b) => b.addEventListener('click', () => {
+  speed = parseInt(b.dataset.speed, 10);
+  el.dev.querySelectorAll('.dev-btn.speed').forEach((x) => x.classList.toggle('active', x === b));
+}));
+
+// ============================================================
+//  KEYBOARD
+// ============================================================
+document.addEventListener('keydown', (e) => {
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.key === ' ') { e.preventDefault(); toggleTimer(); }
+  else if (e.key === 'r' || e.key === 'R') resetTimer();
+  else if (e.key === '$') { e.preventDefault(); toggleDev(); }
+  else if (e.key === 'Escape') closeDrawers();
+});
+
+// ============================================================
+//  INIT
+// ============================================================
+load();
+const a = active();
+loadTimerFromProject(a);
+renderSlime(a.level); el.slime.dataset.form = formForLevel(a.level);
+renderProjects(); renderHero();
+if (window.innerWidth >= 1100) { el.projDock.classList.add('expanded'); }
+
+const s1 = el.dev.querySelector('.dev-btn.speed[data-speed="1"]'); if (s1) s1.classList.add('active');
+</script>
 </body>
 </html>
